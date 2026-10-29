@@ -1,0 +1,147 @@
+{
+  "schema_version": "1.0",
+  "kind": "analytical numerical verification",
+  "experimental_validation": false,
+  "inputs": {
+    "geometry": {
+      "length": 1.0,
+      "angle_degrees": 0.0
+    },
+    "material": {
+      "name": "Illustrative steel",
+      "young_modulus": 210000000000.0,
+      "density": 7850.0
+    },
+    "rectangle": {
+      "width": 0.02,
+      "height": 0.02
+    },
+    "tip_force_N": -100
+  },
+  "analytical_bending_hz": [
+    16.71033188888161,
+    104.72186237274553,
+    293.2242469782244
+  ],
+  "convergence": [
+    {
+      "elements": 2,
+      "bending_hz": [
+        16.718410287568428,
+        105.6105236086318,
+        357.19406936728166
+      ],
+      "relative_frequency_errors": [
+        0.0004834373572313579,
+        0.008485918945207184,
+        0.21816007048628488
+      ],
+      "tip_displacement_m": -0.011904761904761916,
+      "tip_rotation_rad": -0.01785714285714288,
+      "relative_tip_error": 1.1102230246251565e-15,
+      "relative_rotation_error": 1.5543122344752192e-15,
+      "reaction_y_N": 100.00000000000045,
+      "reaction_moment_Nm": 100.00000000000017
+    },
+    {
+      "elements": 4,
+      "bending_hz": [
+        16.71087845180811,
+        104.84388501725385,
+        295.49447596854344
+      ],
+      "relative_frequency_errors": [
+        3.2708083246715984e-05,
+        0.0011652069753495618,
+        0.007742296258629728
+      ],
+      "tip_displacement_m": -0.011904761904761122,
+      "tip_rotation_rad": -0.017857142857141812,
+      "relative_tip_error": 6.561418075534675e-14,
+      "relative_rotation_error": 5.828670879282072e-14,
+      "reaction_y_N": 99.99999999998954,
+      "reaction_moment_Nm": 99.9999999999923
+    },
+    {
+      "elements": 8,
+      "bending_hz": [
+        16.710366697405835,
+        104.73023581753084,
+        293.40259800175085
+      ],
+      "relative_frequency_errors": [
+        2.0830540325598533e-06,
+        7.995889870160811e-05,
+        0.0006082410488368529
+      ],
+      "tip_displacement_m": -0.011904761904760287,
+      "tip_rotation_rad": -0.017857142857140712,
+      "relative_tip_error": 1.3566925360919413e-13,
+      "relative_rotation_error": 1.199040866595169e-13,
+      "reaction_y_N": 99.99999999997362,
+      "reaction_moment_Nm": 99.99999999998346
+    },
+    {
+      "elements": 16,
+      "bending_hz": [
+        16.710334072007633,
+        104.72239727821614,
+        293.2359037492818
+      ],
+      "relative_frequency_errors": [
+        1.306452821741216e-07,
+        5.107868199456844e-06,
+        3.975377608615296e-05
+      ],
+      "tip_displacement_m": -0.01190476190467122,
+      "tip_rotation_rad": -0.017857142857015312,
+      "relative_tip_error": 7.617351194255662e-12,
+      "relative_rotation_error": 7.142286762018557e-12,
+      "reaction_y_N": 99.99999999893225,
+      "reaction_moment_Nm": 99.99999999914931
+    },
+    {
+      "elements": 32,
+      "bending_hz": [
+        16.710331853672383,
+        104.72189595031728,
+        293.22498350760605
+      ],
+      "relative_frequency_errors": [
+        2.10703330079267e-09,
+        3.206357390990703e-07,
+        2.5118297317864385e-06
+      ],
+      "tip_displacement_m": -0.011904761903497131,
+      "tip_rotation_rad": -0.017857142855386497,
+      "relative_tip_error": 1.0624079394006003e-10,
+      "relative_rotation_error": 9.83558789968697e-11,
+      "reaction_y_N": 99.99999998441126,
+      "reaction_moment_Nm": 99.99999998796892
+    }
+  ],
+  "sdof": [
+    {
+      "damping_Ns_per_m": 0.0,
+      "max_displacement_error_m": 1.243549534180044e-13,
+      "max_relative_energy_change": 1.0837997166390778e-11,
+      "max_energy_increment_J": 1.02020822345672e-13,
+      "passed": true
+    },
+    {
+      "damping_Ns_per_m": 0.8,
+      "max_displacement_error_m": 4.8232251526059144e-14,
+      "max_relative_energy_change": 0.8656193619655115,
+      "max_energy_increment_J": -1.4002837320659794e-09,
+      "passed": true
+    }
+  ],
+  "checks": {
+    "static_tip_and_rotation": true,
+    "reaction_equilibrium": true,
+    "modal_32_element_error_below_0_01_percent": true,
+    "modal_monotonic_convergence": true,
+    "sdof_analytical_and_energy": true
+  },
+  "passed": true
+}

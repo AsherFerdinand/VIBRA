@@ -1,0 +1,27 @@
+name: engineering-verification
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.23"
+      - run: uv python install 3.12
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy
+      - run: uv run pytest --junitxml=artifacts/pytest.xml
+      - run: uv run vibra-verify
+      - run: uv run python examples/steel_cantilever.py
+      - run: uv run python examples/sdof_resonance.py
+      - run: uv build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: engineering-verification
+          path: artifacts/
