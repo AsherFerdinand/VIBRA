@@ -21,7 +21,7 @@ figures and that report with `uv run python scripts/generate_portfolio.py`.
   undamped, critically damped, overdamped and harmonically forced SDOF solutions.
 - Physical invariants: undamped free-response energy conservation and damped
   free-response energy decay. Forced-response energy need not decay.
-- Integration: Streamlit's AppTest submits all three workflows and switches a
+- Integration: Streamlit's AppTest submits all four workflows and switches a
   displayed mode while preserving the submitted engineering model.
 - **Experimental validation: none.** No ANSYS comparisons have been performed.
 
@@ -77,3 +77,13 @@ frequencies in this case. Higher modes require finer meshes. A matching tip
 deflection alone does not establish accurate modal behavior.
 
 ![Actual SDOF free responses](results/sdof-free.svg)
+
+## Harmonic verification
+
+Version 0.2 adds independent SDOF receptance/phase, continuous beam compliance,
+DC/static limits, damping sensitivity, sampled resonance and mesh-convergence
+checks. Run `uv run vibra-verify-harmonic`; it writes
+`artifacts/harmonic-verification.json` and exits nonzero if any criterion fails.
+The [harmonic theory and verification](harmonic-response.md) documents all new
+criteria. Existing tests and benchmark commands remain required. No experimental
+validation or ANSYS correlation has been added.

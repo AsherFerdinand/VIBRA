@@ -22,15 +22,20 @@ from vibra.visualization.plots import (
     convergence_plot,
     sdof_response,
 )
+from vibra.workbench.harmonic import workspace as harmonic_workspace
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 st.set_page_config(page_title="VIBRA | Engineering Workbench", page_icon="◫", layout="wide")
 st.title("VIBRA")
-st.caption("STRUCTURAL DYNAMICS & FEM WORKBENCH · 0.1 · SI UNITS")
+st.caption("STRUCTURAL DYNAMICS & FEM WORKBENCH · 0.2 · SI UNITS")
 analysis = st.sidebar.selectbox(
-    "Analysis", ["Static cantilever", "Cantilever modes", "SDOF vibration"]
+    "Analysis", ["Static cantilever", "Cantilever modes", "SDOF vibration", "Harmonic response"]
 )
 st.sidebar.caption("Model → Mesh & supports → Solve → Inspect → Export")
+
+if analysis == "Harmonic response":
+    harmonic_workspace()
+    st.stop()
 
 with st.sidebar.form("model_inputs"):
     if analysis != "SDOF vibration":

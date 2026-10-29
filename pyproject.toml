@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "vibra-workbench"
-version = "0.1.0"
+version = "0.2.0"
 description = "Verified educational structural dynamics and beam FEM workbench"
 readme = "README.md"
 license = "MIT"
@@ -29,6 +29,7 @@ dev = [
 
 [project.scripts]
 vibra-verify = "vibra.verification.benchmarks:main"
+vibra-verify-harmonic = "vibra.verification.harmonic_benchmarks:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/vibra"]

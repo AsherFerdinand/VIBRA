@@ -14,6 +14,8 @@ flowchart LR
     Element --> Assembly[Assembly and exact constraints]
     Assembly --> Static[Static solve]
     Assembly --> Modal[Modal solve]
+    Assembly --> Harmonic[Complex harmonic sweep]
+    Harmonic --> Output
     SDOF[Separate SDOF model] --> Integrator[DOP853 integration]
     Static --> Output[JSON reports / Plotly]
     Modal --> Output
@@ -30,16 +32,17 @@ flowchart LR
 | `src/vibra/core/mesh.py` | validated straight geometry, deterministic cantilever mesh |
 | `src/vibra/core/element.py` | local stiffness/mass and orientation transformation |
 | `src/vibra/core/assembly.py` | global dense matrices, DOF map, constraint elimination and stability |
-| `src/vibra/solvers/` | static and undamped modal results and residual checks |
+| `src/vibra/solvers/` | static, undamped modal and complex harmonic solvers with diagnostic checks |
 | `src/vibra/dynamics/` | separate lumped SDOF equation and time integration |
 | `src/vibra/verification/` | independent analytical solutions and convergence reports |
 | `src/vibra/visualization/` | Plotly engineering figures, Hermite shape interpolation |
 | `src/vibra/io/` | versioned SI JSON reports, explicit verification scope |
+| `src/vibra/workbench/` | harmonic Streamlit workspace; no numerical module imports it |
 | `frontend/app.py` | parameter forms, submitted-result state, inspection and export |
 | `examples/` | executable beam and SDOF cases producing actual plots |
 | `tests/` | unit, analytical, integration and invalid-input checks |
 
-No placeholder harmonic/transient/FFT modules or API service are created. Future
+No placeholder transient/FFT modules or API service are created. Future
 features should enter the package only when they can be exercised and verified.
 
 ## Reproducibility and configuration
@@ -70,8 +73,10 @@ uv run ruff format --check .
 uv run mypy
 uv run pytest --junitxml=artifacts/pytest.xml
 uv run vibra-verify
+uv run vibra-verify-harmonic
 uv run python examples/steel_cantilever.py
 uv run python examples/sdof_resonance.py
+uv run python examples/harmonic_cantilever.py
 uv run python scripts/generate_portfolio.py
 uv build
 ```
@@ -80,3 +85,18 @@ CI executes these checks (except portfolio regeneration, whose generated artifac
 are versioned). There are no paid engineering tools, Docker or MATLAB prerequisites.
 Keep tests based on independent mechanics equations or invariants; do not replace
 benchmarks with snapshots of the same implementation.
+
+## Harmonic extension
+
+`solvers/harmonic.py` owns validated damping, forcing, response and frequency inputs
+and returns full complex global response plus selected amplitudes/phases. It reuses
+`assemble` and `constrained_system`; static/modal and lumped SDOF solvers remain
+independent. `visualization/harmonic.py` plots actual results, while
+`workbench/harmonic.py` owns only Streamlit controls and submitted-result state.
+
+`io/harmonic_report.py` adds complete phasor reports using the generic JSON
+encoder's real/imag complex-array representation.
+`verification/harmonic_analytical.py` contains independent continuous beam and SDOF
+formulas. `verification/harmonic_benchmarks.py` writes CI-readable check outcomes.
+See [harmonic response](harmonic-response.md) for conditioning, phase masks and
+sampled-peak limitations. The dependency set is unchanged for this extension.

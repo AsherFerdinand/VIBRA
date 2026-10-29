@@ -114,3 +114,10 @@ Bending frequencies: ωₙ = βₙ²√(EI/(ρAL⁴)).
 The first axial continuum frequency is √(E/ρ)/(4L).
 
 This implementation does not use an external CAE result as numerical truth.
+
+## Steady-state harmonic extension
+
+The same global K and consistent M now support proportional viscous damping and
+direct complex harmonic response. See [harmonic formulation](harmonic-response.md)
+for phasor conventions, damping definitions, condition/residual guards and the
+independent continuous-beam benchmark. No static or modal formulation was replaced.

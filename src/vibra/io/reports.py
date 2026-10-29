@@ -16,7 +16,11 @@ def _encode(value: Any) -> Any:
     if dataclasses.is_dataclass(value) and not isinstance(value, type):
         return dataclasses.asdict(value)
     if isinstance(value, np.ndarray):
+        if np.iscomplexobj(value):
+            return {"real": value.real.tolist(), "imag": value.imag.tolist()}
         return value.tolist()
+    if isinstance(value, complex):
+        return {"real": value.real, "imag": value.imag}
     if isinstance(value, np.generic):
         return value.item()
     raise TypeError(f"Unsupported report object: {type(value).__name__}")

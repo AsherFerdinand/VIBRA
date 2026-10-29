@@ -1,0 +1,99 @@
+{
+  "schema_version": "1.0",
+  "kind": "Independent analytical harmonic verification",
+  "experimental_validation": false,
+  "ansys_correlation": false,
+  "inputs": {
+    "geometry": {
+      "length": 1.0,
+      "angle_degrees": 0.0
+    },
+    "material": {
+      "name": "Illustrative steel",
+      "young_modulus": 210000000000.0,
+      "density": 7850.0
+    },
+    "rectangle": {
+      "width": 0.02,
+      "height": 0.02
+    },
+    "damping": {
+      "kind": "rayleigh",
+      "alpha": 2.0,
+      "beta": 2e-05
+    },
+    "off_peak_frequencies_hz": [
+      1.6710331888881609,
+      11.697232322217125,
+      15.874815294437527,
+      17.54584848332569,
+      25.06549783332241
+    ],
+    "unit_tip_force_N": 1
+  },
+  "sdof_max_relative_complex_error": 6.9727904988634646e-15,
+  "sdof_max_phase_error_rad": 6.9727904988634646e-15,
+  "zero_frequency_relative_static_error": 6.1524119132627675e-12,
+  "low_frequency_relative_static_error": 2.0625321027672256e-05,
+  "analytical_first_bending_hz": 16.71033188888161,
+  "sampled_peak_hz": 16.710331888881612,
+  "sampled_peak_relative_frequency_error": 2.220446049250313e-16,
+  "damping_alpha_values_per_s": [
+    0.5,
+    2,
+    8
+  ],
+  "damping_tip_amplitudes_m": [
+    0.02426585381192147,
+    0.0060664658688585815,
+    0.0015166261306515825
+  ],
+  "mesh_convergence": [
+    {
+      "elements": 2,
+      "max_relative_complex_compliance_error": 0.011367263713873324,
+      "max_phase_error_radians": 0.001966328235290435,
+      "first_natural_hz": 16.71841028756664,
+      "max_backward_error": 5.2352222503373215e-17
+    },
+    {
+      "elements": 4,
+      "max_relative_complex_compliance_error": 0.0007615638251308817,
+      "max_phase_error_radians": 0.00013190932572261098,
+      "first_natural_hz": 16.710878451686682,
+      "max_backward_error": 5.298906046374751e-17
+    },
+    {
+      "elements": 8,
+      "max_relative_complex_compliance_error": 4.8458856862938624e-05,
+      "max_phase_error_radians": 8.396180705246818e-06,
+      "first_natural_hz": 16.71036669658969,
+      "max_backward_error": 5.964158160311318e-17
+    },
+    {
+      "elements": 16,
+      "max_relative_complex_compliance_error": 3.042417216620959e-06,
+      "max_phase_error_radians": 5.271814420869613e-07,
+      "first_natural_hz": 16.710334074551017,
+      "max_backward_error": 6.30709935004869e-17
+    },
+    {
+      "elements": 32,
+      "max_relative_complex_compliance_error": 1.8948900787444532e-07,
+      "max_phase_error_radians": 3.280381074890733e-08,
+      "first_natural_hz": 16.710332032199574,
+      "max_backward_error": 6.186894697279029e-17
+    }
+  ],
+  "checks": {
+    "sdof_complex_receptance": true,
+    "sdof_phase": true,
+    "zero_frequency_matches_static": true,
+    "low_frequency_static_limit": true,
+    "continuum_mesh_convergence": true,
+    "continuum_32_elements_below_1e_minus_5": true,
+    "first_sampled_peak_within_0_1_percent": true,
+    "damping_reduces_response_at_natural_frequency": true
+  },
+  "passed": true
+}

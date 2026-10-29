@@ -1,7 +1,7 @@
 # VIBRA — Structural Dynamics & FEM Workbench
 
 VIBRA is an open-source Python engineering workbench for small structural models,
-modal analysis and vibration studies. This first release combines real numerical
+modal analysis and vibration studies. The current release combines real numerical
 solvers, independent analytical verification, and an interactive engineering UI.
 It is intended for education and inspectable engineering exploration, with explicit
 assumptions and limits.
@@ -17,9 +17,13 @@ assumptions and limits.
   element axial/shear/end-moment forces; beam shape and moment diagrams.
 - Undamped modal analysis: generalized eigenvalues, rad/s and Hz, mass-normalized
   modes, axial/bending classification and cantilever mesh convergence.
+- **Verified FEM harmonic response**: direct complex frequency sweeps, harmonic
+  nodal forces/moments with phases, undamped/mass/stiffness/Rayleigh damping,
+  multiple response DOFs, amplitude/phase, sampled peaks and conditioning checks.
 - Separate mass-spring-damper SDOF model: free/harmonic forcing, initial displacement
   and velocity, under/critical/overdamping, time responses and mechanical energy.
-- Streamlit + Plotly workbench for static cantilevers, cantilever modes and SDOF;
+- Streamlit + Plotly workbench for static cantilevers, cantilever modes, harmonic
+  FEM and SDOF;
   parameter forms, mode selection, explicit display magnification and JSON reports.
 - Automated numerical verification and reproducible examples, including generated
   reports and standalone interactive HTML figures.
@@ -45,7 +49,7 @@ a localhost preview. The server needs no external services.
 
 Choose an analysis, enter dimensions and SI material properties, configure the
 mesh/supports and load, then **Run analysis**. Inspect the plots, nodal results or
-frequency table, and **Export engineering report (JSON)**. The current beam UI
+frequency table, and export an engineering JSON report. The current beam UI
 uses a fixed root and free tip; the Python model supports individual zero DOF
 constraints and general connected planar frames. Modal loads are ignored because
 prestress is outside this linear model. Results retain their submitted inputs
@@ -54,6 +58,7 @@ until the next solve.
 ## Equations and verification
 
 Static equilibrium: **Ku = F**. Undamped modes: **Kφ = ω²Mφ**, **f = ω/(2π)**.
+Harmonic FEM: **(K + jωC − ω²M)U = F**, with **C = αM + βK**.
 SDOF: **mẍ + cẋ + kx = F₀ sin(2πft)**.
 
 A cantilever under transverse tip load F has δ = FL³/(3EI) and θ = FL²/(2EI).
@@ -77,11 +82,34 @@ E = 210 GPa, ρ = 7850 kg/m³ and a −100 N tip force. The 16-element solver gi
 At 32 elements, all first three bending frequency errors are below **0.0003%**.
 The verification suite also checks matrix symmetry/definiteness, rigid-body modes,
 energy, orientation invariance, invalid models, SDOF analytical responses and all
-three interface workflows. Full tolerances and results are in
+four interface workflows. Full tolerances and results are in
 [verification](docs/verification.md) and the
 [machine-readable report](docs/results/verification.json).
 These are numerical verification and analytical benchmarks, **not experimental
 validation**. No proprietary CAE comparisons have been performed.
+
+## Harmonic response workspace
+
+Select **Harmonic response** to configure excitation location/DOF, peak amplitude,
+load phase, frequency range/resolution, damping and multiple response locations.
+Inspect amplitude and phase, sampled resonance peaks, undamped natural-frequency
+markers, and the actual complex-response beam deformation at a selected frequency
+and cycle phase. Export complete inputs, complex results and numerical diagnostics.
+
+The phasor convention is u(t) = Re(U exp(jωt)); forces are peak cosine-reference
+phasors. Beam harmonic response is separate from the existing lumped SDOF workflow.
+The solver rejects unsafe dynamic stiffness at a reported frequency; it applies no
+artificial regularization. Exact undamped poles have no unique finite response.
+
+![Actual harmonic FEM and analytical continuum curves](docs/results/harmonic-response.svg)
+
+For the same steel beam with 1 N peak tip excitation, α = 2 s⁻¹, β = 2×10⁻⁵ s,
+the 32-element complex tip-compliance error is below 2×10⁻⁷ across five specified
+samples around the first mode. The independent SDOF complex-response/phase errors
+are below 10⁻¹⁰. These are verification results for documented benchmarks, not a
+claim that arbitrary user models are physically validated. See
+[harmonic theory, tolerances and results](docs/harmonic-response.md) and the
+[machine-readable harmonic report](docs/results/harmonic-verification.json).
 
 ## Reproduce results and quality checks
 
@@ -91,13 +119,17 @@ uv run ruff check .
 uv run ruff format --check .
 uv run mypy
 uv run vibra-verify
+uv run vibra-verify-harmonic
 uv run python examples/steel_cantilever.py
 uv run python examples/sdof_resonance.py
+uv run python examples/harmonic_cantilever.py
 uv run python scripts/generate_portfolio.py
+uv run python scripts/generate_harmonic_portfolio.py
 uv build
 ```
 
-Examples create `artifacts/steel-cantilever/` and `artifacts/sdof/` with full JSON
+Examples create `artifacts/steel-cantilever/`, `artifacts/sdof/` and
+`artifacts/harmonic-cantilever/` with full JSON
 results and self-contained interactive HTML plots. `vibra-verify` writes
 `artifacts/verification.json` and fails if benchmark targets fail. The portfolio
 script regenerates the actual SVG/PNG figures and reference report in `docs/results/`.
@@ -116,14 +148,16 @@ joints, nodal forces/moments and zero displacement constraints. Dense matrices
 are suitable for educational meshes. It does not include shear deformation,
 cross-sectional rotary inertia, distributed loads, internal hinges, nonzero
 prescribed displacement, geometric nonlinearity, stress recovery, 3D FEM, contact,
-FEM harmonic/transient response or FFT diagnostics. Slenderness, displacement
-size and high-mode validity remain engineering judgments; a passed algebraic
+FEM transient response or FFT diagnostics. Harmonic FEM supports proportional
+viscous damping, constant load phasors and zero supports; frequency-dependent load
+spectra, nonproportional damping and base excitation are not included.
+Slenderness, displacement size and high-mode validity remain engineering judgments; a passed algebraic
 residual is not proof of physical model suitability. The UI warns for L/h < 10
-and static displacement exceeding 5% of length.
+and static displacement or harmonic complex translation norm exceeding 5% of length.
 
-Next: verified **beam harmonic response** and damping, followed by FEM transient
-dynamics and signal diagnostics. FastAPI and React remain future options; the
-numerical core is already independent of the workbench interface.
+Next: verified **FEM transient dynamics**, followed by signal diagnostics.
+Harmonic response and proportional damping are implemented in version 0.2.
+FastAPI and React remain future options; the numerical core is already independent of the workbench interface.
 
 VIBRA is independently developed and is not affiliated with ANSYS.
 Licensed under the [MIT License](LICENSE).
