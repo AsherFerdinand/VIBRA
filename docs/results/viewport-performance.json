@@ -1,0 +1,28 @@
+{
+  "python": "3.12.14",
+  "system": "Linux",
+  "model": {
+    "beam_elements": 8,
+    "stations_per_element": 21,
+    "animation_frames": 25
+  },
+  "operations": {
+    "stress_recovery": {
+      "median_wall_s": 0.0013195159990573302,
+      "repetitions": 3,
+      "figure_json_bytes": null
+    },
+    "static_viewport": {
+      "median_wall_s": 0.019874204001098406,
+      "repetitions": 3,
+      "figure_json_bytes": 40030
+    },
+    "25_frame_modal_animation": {
+      "median_wall_s": 0.6119690330015146,
+      "repetitions": 3,
+      "figure_json_bytes": 705318
+    }
+  },
+  "process_peak_RSS_MiB": 111.73046875,
+  "scope": "Measured on this cloud CPU; not a laptop/browser benchmark or timing guarantee. Animations capped at 60 states, optional generation; no GPU required."
+}

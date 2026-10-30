@@ -48,7 +48,7 @@ Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/). The lockfile and CI 
 Python 3.12. No MATLAB, ANSYS, Docker, database or credentials are needed.
 
 ```bash
-git clone --branch feat/installed-motor-dynamics --single-branch https://github.com/AsherFerdinand/VIBRA.git
+git clone --branch feat/interactive-cae-stress-workbench --single-branch https://github.com/AsherFerdinand/VIBRA.git
 cd VIBRA
 uv sync --frozen
 uv run streamlit run frontend/app.py --server.address 0.0.0.0 --server.port 8501
@@ -59,7 +59,8 @@ cache is read-only, set `export UV_CACHE_DIR=/workspace/.cache/uv` before uv com
 Run the app on your own accessible host/browser; the onboarding UI does not provide
 a localhost preview. The server needs no external services.
 
-Choose an analysis, enter dimensions and SI material properties, configure the
+Choose **Cantilever Beam**, **Automotive Motor Mount**, or **Vibration Diagnostics**.
+Select an analysis within that experience, enter SI properties, configure the
 mesh/supports and load, then **Run analysis**. Inspect the plots, nodal results or
 frequency table, and export an engineering JSON report. The current beam UI
 uses a fixed root and free tip; the Python model supports individual zero DOF
@@ -289,3 +290,42 @@ Mount damping is assembled independently of Rayleigh damping; modal analysis is
 undamped. Energy accounting includes added inertia, spring energy and dashpot loss.
 These planar linear models do not establish production accuracy, fatigue life,
 acoustic performance, vehicle NVH, experimental validation or ANSYS correlation.
+
+## Interactive CAE workbench and beam stress (0.7.0)
+
+The application now groups its verified capabilities into three experiences:
+
+- **Cantilever Beam:** static deformation/stress, natural modes, harmonic and transient response.
+- **Automotive Motor Mount:** installed bare/rigid/isolated motor configurations and the retained
+  0.5 bare-rail comparison.
+- **Vibration Diagnostics:** signal FFT/PSD/metrics and the independent SDOF reference.
+
+Start with the actual model preview, apply loads, solve, then inspect the central
+viewport. Fixed supports, load arrows, measurement nodes, Hermite deformations,
+motor COM/rigid arms and compliant mounts come from the numerical model. Select
+displacement, axial/bending/combined section normal stress or bending moment.
+Colors/hover values remain physical when display magnification changes; signed
+fields use a zero-centered diverging scale. The root stress maximum and tip
+displacement maximum are distinguished explicitly.
+
+![Actual running cantilever stress workspace](docs/screenshots/cantilever-stress.png)
+
+Modal animations use actual FEM eigenvectors with arbitrary amplitude. Harmonic
+animations use the complete complex solution; transient playback uses actual
+solved samples with a synchronized physical response cursor. Generation is optional
+and bounded to 60 frames. Motor glyphs show radius of gyration, not invented CAD
+geometry; rigid bodies and ideal mounts never receive beam stress contours.
+
+```bash
+uv run vibra-verify-stress
+uv run python examples/beam_stress_viewport.py
+uv run python scripts/measure_viewport.py
+```
+
+Read the [student walkthrough and stress theory](docs/interactive-workbench.md),
+[executed stress checks](docs/results/stress-verification.json),
+[performance measurements](docs/results/viewport-performance.json),
+[actual motor screenshot](docs/screenshots/installed-motor-stress.png) and
+[modal animation screenshot](docs/screenshots/modal-animation.png).
+All original solver algorithms remain intact. Beam section stress is not a 3D
+solid/contact stress field, a von Mises assessment, or a fatigue/strength approval.

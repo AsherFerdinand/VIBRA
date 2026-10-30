@@ -1,0 +1,61 @@
+{
+  "analysis": "Elastic beam section stress verification",
+  "definition": "sigma_xx=N/A-M*y/I; tension positive; prismatic symmetric +/-c fibers",
+  "experimental_validation": false,
+  "solid_or_contact_stress": false,
+  "checks": [
+    {
+      "name": "combined_cantilever_rotated_0_deg",
+      "relative_error": 2.7696955839928703e-13,
+      "tolerance": 1e-08,
+      "passed": true,
+      "maximum_tension_Pa": 124999999.9999876,
+      "maximum_compression_Pa": -24999999.99998758,
+      "critical_global_x_m": 0.0,
+      "critical_global_y_m": 0.0
+    },
+    {
+      "name": "combined_cantilever_rotated_37_deg",
+      "relative_error": 2.1341008960007457e-11,
+      "tolerance": 1e-08,
+      "passed": true,
+      "maximum_tension_Pa": 124999999.99881762,
+      "maximum_compression_Pa": -24999999.998806417,
+      "critical_global_x_m": 0.0,
+      "critical_global_y_m": 0.0
+    },
+    {
+      "name": "combined_cantilever_rotated_90_deg",
+      "relative_error": 4.759215244121151e-13,
+      "tolerance": 1e-08,
+      "passed": true,
+      "maximum_tension_Pa": 124999999.99998769,
+      "maximum_compression_Pa": -24999999.99998767,
+      "critical_global_x_m": 0.0,
+      "critical_global_y_m": 0.0
+    },
+    {
+      "name": "combined_cantilever_rotated_180_deg",
+      "relative_error": 2.7696955839928703e-13,
+      "tolerance": 1e-08,
+      "passed": true,
+      "maximum_tension_Pa": 124999999.99998757,
+      "maximum_compression_Pa": -24999999.99998761,
+      "critical_global_x_m": -0.0,
+      "critical_global_y_m": 0.0
+    },
+    {
+      "name": "pure_bending",
+      "relative_error": 1.6553425297161084e-13,
+      "tolerance": 1e-08,
+      "passed": true
+    },
+    {
+      "name": "pure_axial",
+      "relative_error": 2.220446049250313e-16,
+      "tolerance": 1e-08,
+      "passed": true
+    }
+  ],
+  "all_passed": true
+}

@@ -13,10 +13,15 @@ not attempt a general-purpose production CAE system. Version 0.6 adds verified
 concentrated motor mass/offset inertia and ground/relative spring-dampers, with a
 bare/rigid/isolated installed-system study.
 
+Version 0.7 reorganizes the application into three engineering experiences, with
+a shared actual-model viewport, verified beam section stress contours and bounded
+mode/complex-harmonic/transient animation.
+
 Next milestones, in order:
 
-1. **Installed-system interpretation:** verified prescribed base motion and chassis
-   force paths, controlled mode tracking, followed by measured mount/force/FRF comparisons.
+1. **Interpretation and measurements:** student feedback on the three-experience workbench,
+   controlled measurement/FRF ingestion and mode tracking; independently verify
+   prescribed base motion and chassis force paths before installed-system comparisons.
 2. **V6 — FEM scale and capabilities:** sparse assembly, distributed loads,
    nonzero supports, releases, shear-flexible elements and richer meshes.
 3. **V7 — Independent CAE references:** reproducible comparisons, potentially with

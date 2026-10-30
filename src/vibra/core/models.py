@@ -22,6 +22,9 @@ class Material(EngineeringModel):
 class Section(EngineeringModel):
     area: float = Field(gt=0, description="m²")
     second_moment: float = Field(gt=0, description="m⁴ about the out-of-plane z axis")
+    extreme_fiber_distance: float | None = Field(
+        default=None, gt=0, description="m; symmetric +/-c for section stress recovery"
+    )
 
 
 class Rectangle(EngineeringModel):
@@ -30,7 +33,9 @@ class Rectangle(EngineeringModel):
 
     def section(self) -> Section:
         return Section(
-            area=self.width * self.height, second_moment=self.width * self.height**3 / 12
+            area=self.width * self.height,
+            second_moment=self.width * self.height**3 / 12,
+            extreme_fiber_distance=self.height / 2,
         )
 
 

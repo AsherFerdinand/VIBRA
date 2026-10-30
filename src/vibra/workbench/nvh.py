@@ -15,12 +15,16 @@ from vibra.studies.nvh import NVHConfig, SupportDesign, run_nvh_study
 from vibra.visualization.nvh import comparison_figures, geometry_plot
 from vibra.visualization.plots import beam_shape, bending_moment
 from vibra.workbench.installed import workspace as installed_workspace
+from vibra.workbench.viewport import static_view
 
 
 def workspace() -> None:
     st.subheader("Automotive NVH Study")
     investigation = st.radio(
-        "Investigation", ("Bare rail A/B (0.5 reference)", "Installed motor A/B/C"), horizontal=True
+        "Investigation",
+        ("Bare rail A/B (0.5 reference)", "Installed motor A/B/C"),
+        horizontal=True,
+        index=1,
     )
     if investigation == "Installed motor A/B/C":
         installed_workspace()
@@ -159,7 +163,7 @@ def workspace() -> None:
             )
         design_choice = st.selectbox("Inspect static design", ("Baseline A", "Modified B"))
         item = study.baseline if design_choice == "Baseline A" else study.modified
-        st.plotly_chart(beam_shape(item.model, item.static.displacement, 5), width="stretch")
+        static_view(item.model, item.static, 5, key="bare_nvh", monitors=(study.config.elements,))
         st.plotly_chart(bending_moment(item.model, item.static), width="stretch")
         st.caption(
             "Deformation shown ×5. Moments/end forces are not strength or fatigue assessment."

@@ -8,11 +8,35 @@ from streamlit.testing.v1 import AppTest
 APP = Path(__file__).resolve().parents[1] / "frontend" / "app.py"
 
 
+def navigate(app: AppTest, analysis: str) -> None:
+    """Retain all existing solver/UI assertions through the new experience grouping."""
+    experience = (
+        "Automotive Motor Mount"
+        if analysis == "Automotive NVH Study"
+        else "Vibration Diagnostics"
+        if analysis in ("Signal Diagnostics", "SDOF vibration")
+        else "Cantilever Beam"
+    )
+    app.sidebar.selectbox[0].select(experience).run()
+    if experience == "Cantilever Beam":
+        next(widget for widget in app.selectbox if widget.label == "Analysis").select(
+            analysis
+        ).run()
+    elif experience == "Vibration Diagnostics":
+        next(widget for widget in app.radio if widget.label == "Diagnostic tool").set_value(
+            analysis
+        ).run()
+    elif experience == "Automotive Motor Mount":
+        next(widget for widget in app.radio if widget.label == "Investigation").set_value(
+            "Bare rail A/B (0.5 reference)"
+        ).run()
+
+
 @pytest.mark.parametrize("analysis", ["Static cantilever", "Cantilever modes", "SDOF vibration"])
 def test_workbench_workflows(analysis: str) -> None:
     app = AppTest.from_file(str(APP), default_timeout=30).run()
     assert not app.exception
-    app.sidebar.selectbox[0].select(analysis).run()
+    navigate(app, analysis)
     app.sidebar.button[0].click().run()
     assert not app.exception
     assert not app.error
@@ -30,7 +54,7 @@ def test_harmonic_workspace_multiple_responses_and_zero_load() -> None:
     import numpy as np
 
     app = AppTest.from_file(str(APP), default_timeout=30).run()
-    app.sidebar.selectbox[0].select("Harmonic response").run()
+    navigate(app, "Harmonic response")
     assert not app.exception
     app.sidebar.button[0].click().run()
     assert not app.exception
@@ -70,7 +94,7 @@ def test_harmonic_workspace_multiple_responses_and_zero_load() -> None:
 
 def test_harmonic_workspace_invalid_sweep_clears_old_results() -> None:
     app = AppTest.from_file(str(APP), default_timeout=30).run()
-    app.sidebar.selectbox[0].select("Harmonic response").run()
+    navigate(app, "Harmonic response")
     app.sidebar.button[0].click().run()
     assert "harmonic_solved" in app.session_state
     next(widget for widget in app.number_input if widget.label == "Start frequency [Hz]").set_value(
@@ -85,7 +109,7 @@ def test_harmonic_workspace_invalid_sweep_clears_old_results() -> None:
 @pytest.mark.parametrize("kind", ["undamped", "mass", "stiffness"])
 def test_harmonic_workspace_damping_models(kind: str) -> None:
     app = AppTest.from_file(str(APP), default_timeout=30).run()
-    app.sidebar.selectbox[0].select("Harmonic response").run()
+    navigate(app, "Harmonic response")
     next(widget for widget in app.selectbox if widget.label == "Damping model").select(kind).run()
     app.sidebar.button[0].click().run()
     assert not app.exception
@@ -100,7 +124,7 @@ def test_transient_workspace_excitation_and_time_slider(excitation: str) -> None
     import numpy as np
 
     app = AppTest.from_file(str(APP), default_timeout=30).run()
-    app.sidebar.selectbox[0].select("Transient response").run()
+    navigate(app, "Transient response")
     next(widget for widget in app.selectbox if widget.label == "Time excitation").select(
         excitation
     ).run()
@@ -124,7 +148,7 @@ def test_transient_workspace_excitation_and_time_slider(excitation: str) -> None
 
 def test_transient_workspace_initial_profile_and_invalid_grid() -> None:
     app = AppTest.from_file(str(APP), default_timeout=30).run()
-    app.sidebar.selectbox[0].select("Transient response").run()
+    navigate(app, "Transient response")
     next(
         widget for widget in app.number_input if widget.label == "Signed force [N] / moment [N m]"
     ).set_value(0.0)
@@ -146,7 +170,7 @@ def test_transient_workspace_initial_profile_and_invalid_grid() -> None:
 
 def test_signal_workspace_fem_integration_and_spectrum_controls() -> None:
     app = AppTest.from_file(str(APP), default_timeout=30).run()
-    app.sidebar.selectbox[0].select("Signal Diagnostics").run()
+    navigate(app, "Signal Diagnostics")
     next(
         widget for widget in app.button if widget.label == "Generate cantilever pulse simulation"
     ).click().run()
@@ -173,7 +197,7 @@ def test_signal_workspace_csv_and_invalid_sampling() -> None:
     import numpy as np
 
     app = AppTest.from_file(str(APP), default_timeout=30).run()
-    app.sidebar.selectbox[0].select("Signal Diagnostics").run()
+    navigate(app, "Signal Diagnostics")
     next(widget for widget in app.radio if widget.label == "Signal source").set_value(
         "CSV import"
     ).run()
@@ -193,7 +217,7 @@ def test_signal_workspace_csv_and_invalid_sampling() -> None:
 
 def test_automotive_nvh_workspace_runs_real_study_and_exports() -> None:
     app = AppTest.from_file(str(APP), default_timeout=60).run()
-    app.sidebar.selectbox[0].select("Automotive NVH Study").run()
+    navigate(app, "Automotive NVH Study")
     next(widget for widget in app.button if widget.label == "Run engineering study").click().run()
     assert not app.exception
     assert not app.error
@@ -221,7 +245,7 @@ def test_automotive_nvh_workspace_runs_real_study_and_exports() -> None:
 
 def test_installed_motor_workspace_executes_and_interacts() -> None:
     app = AppTest.from_file(str(APP), default_timeout=60).run()
-    app.sidebar.selectbox[0].select("Automotive NVH Study").run()
+    navigate(app, "Automotive NVH Study")
     next(widget for widget in app.radio if widget.label == "Investigation").set_value(
         "Installed motor A/B/C"
     ).run()
@@ -252,3 +276,57 @@ def test_installed_motor_workspace_executes_and_interacts() -> None:
     assert not app.exception
     assert app.error
     assert "installed_study" not in app.session_state
+
+
+def test_three_experiences_and_static_stress_interpretation() -> None:
+    import numpy as np
+
+    app = AppTest.from_file(str(APP), default_timeout=30).run()
+    assert app.sidebar.selectbox[0].options == [
+        "Cantilever Beam",
+        "Automotive Motor Mount",
+        "Vibration Diagnostics",
+    ]
+    next(widget for widget in app.number_input if widget.label == "Tip axial force [N]").set_value(
+        20000.0
+    )
+    app.sidebar.button[0].click().run()
+    assert not app.exception and not app.error
+    before = app.session_state["solved"]["result"].displacement.copy()
+    next(widget for widget in app.selectbox if widget.label == "Contour field").select(
+        "Combined normal stress"
+    ).run()
+    next(widget for widget in app.selectbox if widget.label == "Section fiber").select(
+        "bottom"
+    ).run()
+    assert not app.exception
+    assert any("125 MPa" in item.value for item in app.info)
+    np.testing.assert_allclose(app.session_state["solved"]["result"].displacement, before, atol=0)
+    next(widget for widget in app.checkbox if widget.label == "Show deformation").set_value(
+        False
+    ).run()
+    assert not app.exception
+
+
+def test_mode_and_harmonic_animation_controls_use_saved_results() -> None:
+    import numpy as np
+
+    app = AppTest.from_file(str(APP), default_timeout=60).run()
+    navigate(app, "Cantilever modes")
+    app.sidebar.button[0].click().run()
+    before = app.session_state["solved"]["result"].modes.copy()
+    next(widget for widget in app.checkbox if widget.label == "Animate mode shape").set_value(
+        True
+    ).run()
+    assert not app.exception
+    np.testing.assert_allclose(app.session_state["solved"]["result"].modes, before, atol=0)
+    navigate(app, "Harmonic response")
+    app.sidebar.button[0].click().run()
+    before_h = app.session_state["harmonic_solved"]["result"].displacement.copy()
+    next(widget for widget in app.checkbox if widget.label == "Animate harmonic cycle").set_value(
+        True
+    ).run()
+    assert not app.exception
+    np.testing.assert_allclose(
+        app.session_state["harmonic_solved"]["result"].displacement, before_h, atol=0
+    )

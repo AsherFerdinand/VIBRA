@@ -2,6 +2,7 @@
 
 import csv
 import io
+from typing import Literal
 
 import numpy as np
 import streamlit as st
@@ -24,9 +25,9 @@ from vibra.solvers.transient import InitialValue, TimeGrid, TransientConfig, sol
 from vibra.visualization.transient import (
     energy_history,
     response_history,
-    transient_animation,
-    transient_shape,
 )
+from vibra.visualization.viewport import engineering_viewport, state_animation
+from vibra.workbench.viewport import model_preview, nodal_loads
 
 
 def _initial_profile(
@@ -167,6 +168,14 @@ def workspace() -> None:
             st.error(str(exc))
     saved = st.session_state.get("transient_solved")
     if saved is None:
+        preview = cantilever(
+            BeamGeometry(length=length),
+            Material(young_modulus=young * 1e9, density=density),
+            Rectangle(width=width, height=height).section(),
+            count,
+            tip_force=0,
+        )
+        model_preview(preview, loads=(), monitors=tuple(nodes), key="transient")
         st.info("Configure the model, time grid, forcing, initial state and responses, then run.")
         return
     result, config, model = saved["result"], saved["config"], saved["model"]
@@ -181,12 +190,6 @@ def workspace() -> None:
         )
     for warning in result.numerical_warnings:
         st.warning(warning)
-    st.plotly_chart(response_history(result), width="stretch")
-    st.plotly_chart(energy_history(result), width="stretch")
-    st.caption(
-        "Plots show up to 2001 actual samples. "
-        "Energy integrals and diagnostics use every integration step."
-    )
     st.subheader("Physical beam deformation")
     index = st.slider("Time sample", 0, len(result.time) - 1, 0)
     column = st.selectbox(
@@ -207,10 +210,24 @@ def workspace() -> None:
     )
     a, b, c = st.columns(3)
     a.metric("Time [s]", f"{result.time[index]:.6g}")
-    unit = "rad" if result.response_dofs[column].dof == DOF.RZ else "m"
+    unit: Literal["rad", "m"] = "rad" if result.response_dofs[column].dof == DOF.RZ else "m"
     b.metric(f"Physical response [{unit}]", f"{result.response_displacement[index, column]:.6g}")
     c.metric("Relative energy balance error", f"{result.relative_energy_error:.3e}")
-    st.plotly_chart(transient_shape(model, result, index, scale), width="stretch")
+    st.plotly_chart(
+        engineering_viewport(
+            model,
+            result.displacement[index],
+            scale,
+            loads=nodal_loads(model, result.force_right[index]),
+            monitors=tuple(sorted({r.node for r in config.responses})),
+            title=f"Transient snapshot · t={result.time[index]:.6g} s",
+        ),
+        width="stretch",
+    )
+    history = response_history(result)
+    history.add_vline(x=float(result.time[index]), line_dash="dash", line_color="#ba4b37")
+    st.plotly_chart(history, width="stretch")
+    st.plotly_chart(energy_history(result), width="stretch")
     if peak_translation / saved["geometry"].length > 0.05:
         st.warning(
             "Displacement exceeds 5% of beam length; small-displacement theory may be unsuitable."
@@ -219,7 +236,22 @@ def workspace() -> None:
         st.caption(
             "Illustrative playback speed; frame titles show actual timestamps and magnification."
         )
-        st.plotly_chart(transient_animation(model, result, scale), width="stretch")
+        indices = np.unique(
+            np.linspace(0, len(result.time) - 1, min(40, len(result.time)), dtype=int)
+        )
+        st.plotly_chart(
+            state_animation(
+                model,
+                result.displacement[indices],
+                tuple(f"t={result.time[i]:.6g} s" for i in indices),
+                scale,
+                times=result.time[indices],
+                response=result.response_displacement[indices, column],
+                response_unit=unit,
+                force_states=result.force_right[indices],
+            ),
+            width="stretch",
+        )
     with st.expander("Energy, support reactions and solver diagnostics"):
         st.write(f"Maximum full-grid backward error: {result.backward_errors.max():.3e}")
         st.write(

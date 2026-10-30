@@ -10,6 +10,7 @@ from vibra.core.assembly import assemble
 from vibra.core.element import Matrix
 from vibra.core.models import FrameModel
 from vibra.dynamics.sdof import SDOFResult
+from vibra.postprocessing.beam import sample_beam
 from vibra.solvers.static import StaticResult
 
 
@@ -31,21 +32,9 @@ def beam_shape(model: FrameModel, displacement: Matrix, scale: float, modal: boo
     nodes = {node.id: node for node in model.nodes}
     coordinates = np.array([[nodes[n].x, nodes[n].y] for n in assembly.node_ids])
     figure = go.Figure()
-    for index, entry in enumerate(assembly.elements):
-        a, b = (nodes[n] for n in entry.element.nodes)
-        local = entry.matrices.transform @ displacement.reshape(-1)[entry.dofs]
-        xi = np.linspace(0, 1, 21)
-        length = entry.matrices.length
-        axial = (1 - xi) * local[0] + xi * local[3]
-        transverse = (
-            (1 - 3 * xi**2 + 2 * xi**3) * local[1]
-            + length * (xi - 2 * xi**2 + xi**3) * local[2]
-            + (3 * xi**2 - 2 * xi**3) * local[4]
-            + length * (-(xi**2) + xi**3) * local[5]
-        )
-        global_delta = entry.matrices.transform[:2, :2].T @ np.vstack([axial, transverse])
-        base = np.array([[a.x], [a.y]]) + np.array([[b.x - a.x], [b.y - a.y]]) * xi
-        shape = base + scale * global_delta
+    for index, field in enumerate(sample_beam(model, displacement)):
+        base = field.position_m.T
+        shape = base + scale * field.displacement_m.T
         figure.add_trace(
             go.Scatter(
                 x=base[0],

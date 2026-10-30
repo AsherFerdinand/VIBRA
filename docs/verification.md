@@ -138,3 +138,17 @@ this does not establish converged high-frequency acceleration or reactions.
 See [engineering interpretation](installed-motor-dynamics.md). CI retains all earlier
 checks and now installs/runs the wheel outside the checkout. No experimental or
 ANSYS validation is implied by numerical agreement.
+
+## Section stress and viewport correspondence (0.7)
+
+`vibra-verify-stress` compares independent N/A and -M*y/I cantilever/axial references,
+including 0/37/90/180-degree orientations, with tolerance 1e-8. The
+[executed report](results/stress-verification.json) records errors and reference
+stress extrema. Additional tests cover elastic end-force signs, exact cubic and
+rigid-motion interpolation, contour SI/display units, one-sided element values,
+critical locations, modal normalization, unchanged results after UI interactions,
+actual body/mount motion, bounded animations and synchronized response cursors.
+All prior tests and verification CLIs remain. Real Chromium screenshots are under
+`screenshots/`; UI automation also exercises new contour and animation controls.
+Performance measurements are executed cloud-CPU observations, not universal laptop
+benchmarks. No experimental, solid/contact stress or ANSYS validation is claimed.

@@ -16,7 +16,9 @@ from vibra.solvers.harmonic import (
     ResponseDOF,
     solve_harmonic,
 )
-from vibra.visualization.harmonic import harmonic_shape, response_figures
+from vibra.visualization.harmonic import response_figures
+from vibra.visualization.viewport import engineering_viewport
+from vibra.workbench.viewport import cycle_view, model_preview, nodal_loads
 
 
 def workspace() -> None:
@@ -99,6 +101,21 @@ def workspace() -> None:
             st.error(str(exc))
     saved = st.session_state.get("harmonic_solved")
     if saved is None:
+        preview = cantilever(
+            BeamGeometry(length=length),
+            Material(young_modulus=young * 1e9, density=density),
+            Rectangle(width=width, height=height).section(),
+            count,
+            tip_force=0,
+        )
+        load_vector = np.zeros(3 * (count + 1))
+        load_vector[3 * load_node + int(DOF[load_dof])] = force
+        model_preview(
+            preview,
+            loads=nodal_loads(preview, load_vector),
+            monitors=tuple(response_nodes),
+            key="harmonic",
+        )
         st.info(
             "Define the beam, excitation, sweep, damping and response DOFs, then run the analysis."
         )
@@ -125,31 +142,6 @@ def workspace() -> None:
             "Undamped response is unbounded at an excited natural frequency. "
             "A sampled curve can miss the pole."
         )
-    amplitude_plot, phase_plot = response_figures(result)
-    st.plotly_chart(amplitude_plot, width="stretch")
-    st.plotly_chart(phase_plot, width="stretch")
-    st.caption(
-        "Diamonds: sampled interior maxima. Dotted lines: undamped natural frequencies. "
-        "Phase is wrapped and omitted at zero/negligible response. "
-        "Refine the sweep to resolve narrow peaks."
-    )
-    if result.peaks:
-        st.dataframe(
-            [
-                {
-                    "Response": peak.response.label,
-                    "Sample frequency [Hz]": peak.frequency_hz,
-                    "Peak amplitude [m or rad]": peak.amplitude,
-                    "Phase [deg]": None
-                    if peak.phase_radians is None
-                    else np.rad2deg(peak.phase_radians),
-                }
-                for peak in result.peaks
-            ],
-            hide_index=True,
-        )
-    else:
-        st.info("No interior resonance peaks resolved in this sweep.")
     st.subheader("Complex-response deformation")
     response_column = st.selectbox(
         "Inspect response",
@@ -182,7 +174,53 @@ def workspace() -> None:
         "Actual phasor snapshot Re(U exp(jθ)), "
         "Hermite interpolated and magnified by the scale shown."
     )
-    st.plotly_chart(harmonic_shape(model, result, index, time_phase, scale), width="stretch")
+    state = np.real(result.displacement[index] * np.exp(1j * np.deg2rad(time_phase)))
+    applied = np.real(result.force_phasor * np.exp(1j * np.deg2rad(time_phase)))
+    st.plotly_chart(
+        engineering_viewport(
+            model,
+            state,
+            scale,
+            loads=nodal_loads(model, applied),
+            monitors=tuple(sorted({r.node for r in case.responses})),
+            title=f"Harmonic snapshot · {result.frequencies_hz[index]:.5g} Hz · θ={time_phase}°",
+        ),
+        width="stretch",
+    )
+    cycle_view(
+        model,
+        result.displacement[index],
+        scale,
+        label=f"{result.frequencies_hz[index]:.5g} Hz",
+        key="harmonic",
+        force=result.force_phasor,
+    )
+    amplitude_plot, phase_plot = response_figures(result)
+    st.plotly_chart(amplitude_plot, width="stretch")
+    st.plotly_chart(phase_plot, width="stretch")
+    st.caption(
+        "Diamonds: sampled interior maxima. Dotted lines: undamped natural frequencies. "
+        "Phase is wrapped and omitted at zero/negligible response. "
+        "Refine the sweep to resolve narrow peaks."
+    )
+    if result.peaks:
+        st.dataframe(
+            [
+                {
+                    "Response": peak.response.label,
+                    "Sample frequency [Hz]": peak.frequency_hz,
+                    "Peak amplitude [m or rad]": peak.amplitude,
+                    "Phase [deg]": None
+                    if peak.phase_radians is None
+                    else np.rad2deg(peak.phase_radians),
+                }
+                for peak in result.peaks
+            ],
+            hide_index=True,
+        )
+    else:
+        st.info("No interior resonance peaks resolved in this sweep.")
+
     if magnitude / geometry.length > 0.05:
         st.warning(
             "Complex displacement norm exceeds 5% of length; "

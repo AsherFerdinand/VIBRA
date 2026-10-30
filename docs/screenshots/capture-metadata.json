@@ -1,0 +1,23 @@
+{
+  "source": "Actual running Streamlit app; Chromium via Playwright, no image synthesis",
+  "viewport_px": [
+    1600,
+    1400
+  ],
+  "cases": [
+    "Default static cantilever: top combined normal stress",
+    "Default isolated motor: beam-only top combined normal stress",
+    "Default first cantilever eigenmode: actual animation controls"
+  ],
+  "browser_page_errors": [
+    {
+      "message": "undefined",
+      "stack": ""
+    }
+  ],
+  "animation_control_checks": {
+    "play_advances_actual_frames": true,
+    "pause_freezes_title_and_coordinates": true
+  },
+  "browser_message_interpretation": "Native Plotly/Streamlit playback cancellation can emit undefined; actual motion and pause checked; no application result change"
+}

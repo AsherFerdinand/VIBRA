@@ -139,3 +139,24 @@ alpha*M+beta*K+C_mount; full nonproportional damping is retained. The global
 quadratic energies include all added matrices. Free modes and singular reduced
 mass matrices are reported rather than regularized. See the full
 [inertia/mount derivation, reaction conventions and limitations](installed-motor-dynamics.md).
+
+## Beam section stress recovery and interpolation (0.7)
+
+`postprocessing/beam.py` reconstructs local axial displacement linearly and transverse
+motion with the existing cubic Hermite functions, then transforms displacement to
+global X/Y. Elastic resultants are N=EA*u', M=EI*v'', V=EI*d³v/dx³=dM/dx.
+These agree with local elastic end forces N=-N1=N2, V=V1, M(x)=-M1+V1*x.
+At a symmetric section fiber y, tension-positive normal stress is
+sigma_xx=N/A-M*y/I. Top means local +y, independent of global orientation.
+`Rectangle.section()` supplies geometric c=h/2; generic sections must explicitly
+supply `extreme_fiber_distance`, which cannot be inferred from area and I alone.
+Old sections without this optional metadata continue to solve normally.
+
+Section extrema use both +/-c and all element endpoints. Displacement contour
+extrema use sampled Hermite stations and are labeled sampled. Joints retain each
+member's one-sided values; no averaging invents continuity across section changes.
+There are no distributed element loads in the supported formulation. Dynamic elastic
+fields can be reconstructed from instantaneous nodal states, but static workbench
+stress contours do not claim dynamic stress convergence. Mode display supplies no
+physical operating amplitude or stress. See the
+[full sign conventions, walkthrough and limits](interactive-workbench.md).

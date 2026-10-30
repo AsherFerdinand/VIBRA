@@ -14,9 +14,17 @@ from vibra.io.installed_report import (
     installed_markdown,
 )
 from vibra.solvers.transient import TimeGrid
-from vibra.studies.installed import InstalledConfig, run_installed_study
+from vibra.studies.installed import InstalledConfig, installed_model, run_installed_study
 from vibra.studies.nvh import SupportDesign
-from vibra.visualization.installed import installed_figures, installed_shape
+from vibra.visualization.installed import installed_figures
+from vibra.visualization.viewport import engineering_viewport, state_animation
+from vibra.workbench.viewport import (
+    cycle_view,
+    model_preview,
+    nodal_loads,
+    recovered_mount_forces,
+    static_view,
+)
 
 
 def workspace() -> None:
@@ -88,6 +96,24 @@ def workspace() -> None:
             st.error(str(exc))
     study = st.session_state.get("installed_study")
     if study is None:
+        try:
+            preview_config = InstalledConfig(
+                rail=SupportDesign(length=length, height=depth, width=width),
+                elements=elements,
+                motor_mass_kg=mass,
+                motor_inertia_kg_m2=inertia,
+                motor_height_m=height,
+                mount_span_m=span,
+                stiffness_x_N_per_m=kx,
+                stiffness_y_N_per_m=ky,
+                damping_x_Ns_per_m=cx,
+                damping_y_Ns_per_m=cy,
+                stiffness_beta_s=beta,
+            )
+            preview, node = installed_model(preview_config, "isolated")
+            model_preview(preview, monitors=(node, preview_config.elements), key="installed")
+        except (EngineeringError, ValidationError, ValueError) as exc:
+            st.error(str(exc))
         st.write("Run the installed investigation with illustrative motor and isolator properties.")
         return
     st.caption(
@@ -96,24 +122,48 @@ def workspace() -> None:
     st.write(installed_conclusion(study))
     if not all(study.checks.values()):
         st.warning("Numerical study checks failed; inspect convergence before interpretation.")
-    st.dataframe(
-        [{"Topology": case.topology, **case.summary} for case in study.cases], hide_index=True
+    selected = st.selectbox(
+        "Installed topology", tuple(case.topology for case in study.cases), index=2
     )
+    inspected = next(case for case in study.cases if case.topology == selected)
+    scale_static = st.number_input("Installed static magnification [×]", min_value=0.0, value=5.0)
+    body = inspected.model.nodal_masses[0] if inspected.model.nodal_masses else None
+    vector = inspected.static.displacement
+    physical_y = (
+        (
+            vector[inspected.static.node_ids.index(body.node), 1]
+            + body.offset[0] * vector[inspected.static.node_ids.index(body.node), 2]
+        )
+        if body
+        else vector[-1, 1]
+    )
+    st.caption(
+        f"Physical motor/interface Y = {physical_y * 1e3:.5g} mm; "
+        f"rail tip Y = {vector[study.config.elements, 1] * 1e3:.5g} mm. "
+        "Beam contours exclude motor and springs."
+    )
+    static_view(
+        inspected.model,
+        inspected.static,
+        scale_static,
+        key="installed_static",
+        monitors=(inspected.force_node,),
+    )
+    st.caption(
+        "Motor outline is an inertia glyph of radius sqrt(Jz/m), not CAD geometry; "
+        "arms are massless rigid kinematics. Only beam members receive stress "
+        "contours."
+    )
+    with st.expander("Engineering comparison table"):
+        st.dataframe(
+            [{"Topology": case.topology, **case.summary} for case in study.cases], hide_index=True
+        )
     figures = installed_figures(study)
     tabs = st.tabs(
         ("Topology & modes", "Harmonic & transmission", "Transient", "Report & convergence")
     )
     with tabs[0]:
-        selected = st.selectbox("Installed topology", tuple(case.topology for case in study.cases))
-        case = next(case for case in study.cases if case.topology == selected)
-        st.plotly_chart(
-            installed_shape(case, np.zeros(3 * len(case.model.nodes)), 1), width="stretch"
-        )
-        st.caption(
-            "Dotted links are massless rigid arms. Motor-to-rail mount points "
-            "coincide undeformed; they are not ground springs. Root is fixed. "
-            "Model is a planar idealization."
-        )
+        case = inspected
         st.dataframe(
             [
                 {
@@ -130,17 +180,71 @@ def workspace() -> None:
         mode = st.slider("Installed mode number", 1, 6, 1)
         pivot = float(np.max(abs(case.modal.modes[:, mode - 1])))
         st.plotly_chart(
-            installed_shape(case, case.modal.modes[:, mode - 1], 0.05 / pivot, modal=True),
+            engineering_viewport(
+                case.model,
+                case.modal.modes[:, mode - 1],
+                0.05 / pivot,
+                loads=(),
+                modal=True,
+                title=(
+                    f"{case.topology} · mode {mode} · "
+                    f"{case.modal.frequencies_hz[mode - 1]:.5g} Hz · "
+                    f"{case.modal.families[mode - 1]}"
+                ),
+            ),
             width="stretch",
         )
-        st.caption(
-            "Mode is mass normalized; displayed maximum generalized component is "
-            "scaled to 0.05. Mixed m/rad components make display magnitude "
-            "arbitrary. Modal frequencies exclude damping."
+        cycle_view(
+            case.model,
+            case.modal.modes[:, mode - 1],
+            0.05 / pivot,
+            label=f"{case.topology} · mode {mode} · {case.modal.frequencies_hz[mode - 1]:.5g} Hz",
+            key="installed_mode",
+            modal=True,
         )
-        st.plotly_chart(installed_shape(case, case.static.displacement, 5), width="stretch")
-        st.caption("Static deformation ×5. No strength/fatigue or geometric stiffening assessment.")
+        st.caption(
+            "Modes exclude damping; display amplitude is arbitrary, not an operating displacement."
+        )
     with tabs[1]:
+        case = inspected
+        sample = st.slider(
+            "Installed frequency sample",
+            0,
+            len(case.harmonic.frequencies_hz) - 1,
+            int(np.argmin(abs(case.harmonic.frequencies_hz - study.config.operating_hz))),
+        )
+        h = case.harmonic
+        amplitude = float(abs(h.displacement[sample, 3 * case.force_node + 1]))
+        st.write(
+            f"Excitation {h.frequencies_hz[sample]:.5g} Hz · motor/interface UY peak "
+            f"{amplitude:.5g} m · phase "
+            f"{np.angle(h.displacement[sample, 3 * case.force_node + 1], deg=True):.4g}°"
+        )
+        hs = st.number_input("Installed harmonic magnification [×]", min_value=0.0, value=1000.0)
+        st.plotly_chart(
+            engineering_viewport(
+                case.model,
+                np.real(h.displacement[sample]),
+                hs,
+                loads=nodal_loads(case.model, np.real(h.force_phasor)),
+                title=f"{case.topology} · harmonic snapshot at phase 0°",
+                mount_forces_N=recovered_mount_forces(
+                    case.model,
+                    np.real(h.displacement[sample]),
+                    np.real(1j * 2 * np.pi * h.frequencies_hz[sample] * h.displacement[sample]),
+                    study.config.stiffness_beta_s,
+                ),
+            ),
+            width="stretch",
+        )
+        cycle_view(
+            case.model,
+            h.displacement[sample],
+            hs,
+            label=f"{case.topology} · {h.frequencies_hz[sample]:.5g} Hz",
+            key="installed_harmonic",
+            force=h.force_phasor,
+        )
         for key in (
             "harmonic_motor",
             "harmonic_rail",
@@ -156,11 +260,6 @@ def workspace() -> None:
         )
         st.dataframe(study.sensitivities, hide_index=True)
     with tabs[2]:
-        for key in ("displacement", "root_reaction", "transmitted", "energy", "dissipation"):
-            st.plotly_chart(figures[key], width="stretch")
-        with st.expander("Velocity and acceleration histories"):
-            st.plotly_chart(figures["velocity"], width="stretch")
-            st.plotly_chart(figures["acceleration"], width="stretch")
         selected_t = st.slider(
             "Installed deformation time [s]",
             0.0,
@@ -168,15 +267,46 @@ def workspace() -> None:
             0.0,
             step=study.config.grid.time_step,
         )
-        case = study.cases[2]
+        case = inspected
         index = int(round(selected_t / study.config.grid.time_step))
         st.plotly_chart(
-            installed_shape(case, case.transient.displacement[index], 20), width="stretch"
+            engineering_viewport(
+                case.model,
+                case.transient.displacement[index],
+                20,
+                loads=nodal_loads(case.model, case.transient.force_right[index]),
+                title=f"{case.topology} · t={case.transient.time[index]:.6g} s",
+                mount_forces_N=recovered_mount_forces(
+                    case.model,
+                    case.transient.displacement[index],
+                    case.transient.velocity[index],
+                    study.config.stiffness_beta_s,
+                ),
+            ),
+            width="stretch",
         )
-        st.caption(
-            "Actual isolated FEM/rigid-body solution at selected time; physical "
-            "displacement magnified ×20."
-        )
+        st.caption("Actual installed FEM/rigid-body solution; physical displacement magnified ×20.")
+        figures["displacement"].add_vline(x=float(case.transient.time[index]), line_dash="dash")
+        for key in ("displacement", "root_reaction", "transmitted", "energy", "dissipation"):
+            st.plotly_chart(figures[key], width="stretch")
+        with st.expander("Velocity and acceleration histories"):
+            st.plotly_chart(figures["velocity"], width="stretch")
+            st.plotly_chart(figures["acceleration"], width="stretch")
+        if st.checkbox("Animate installed transient"):
+            t = case.transient
+            indices = np.unique(np.linspace(0, len(t.time) - 1, min(30, len(t.time)), dtype=int))
+            st.plotly_chart(
+                state_animation(
+                    case.model,
+                    t.displacement[indices],
+                    tuple(f"{case.topology} · t={t.time[i]:.6g} s" for i in indices),
+                    20,
+                    times=t.time[indices],
+                    response=t.displacement[indices, 3 * case.force_node + 1],
+                    force_states=t.force_right[indices],
+                ),
+                width="stretch",
+            )
     with tabs[3]:
         st.json(study.checks)
         st.dataframe(study.convergence, hide_index=True)

@@ -196,3 +196,28 @@ solvers, force recovery, sensitivities and common-time displacement refinement.
 `verification/installed_benchmarks.py` supplies independent equations and an executable
 report; `scripts/generate_installed_portfolio.py` produces real numerical figures.
 No dependencies or cloud services were added.
+
+## Three-experience viewport and postprocessing (0.7)
+
+`frontend/app.py` now routes Cantilever Beam, Automotive Motor Mount and Vibration
+Diagnostics. `workbench/beam.py` retains the original static/modal/SDOF controls and
+exports; existing harmonic, transient, signal and motor workflows remain reusable
+modules. Their solver/session-state paths are preserved. Only UI navigation tests
+were adapted to the grouping; their earlier solver/result assertions remain.
+
+`postprocessing/beam.py` owns shared Hermite reconstruction, local elastic force
+resultants and explicit-fiber section stress recovery. This module has no Streamlit
+or Plotly dependency. `visualization/plots.py` reuses its interpolation, preserving
+legacy trace ordering. No numerical solver was changed for this release. The only
+numerical input addition is optional section extreme-fiber geometry.
+
+`visualization/viewport.py` maps actual model/result data to geometry, supports,
+loads, sensors, rigid offset points, inertia glyphs, contours and bounded frames.
+Color/hover quantities are unscaled; magnification changes coordinates. Animation
+geometry/color ranges are fixed across frames; actual force annotations and the
+physical time cursor update together. `workbench/viewport.py` owns common controls
+and computed interpretation. Beam stress never colors motor or mount glyphs.
+`verification/stress_benchmarks.py` and unit/UI tests verify signs, transformations,
+interpolation, units, critical locations and result/animation correspondence.
+Screenshots are Chromium captures of the actual Streamlit app, not generated images.
+No runtime dependencies or major physics solver were introduced.
