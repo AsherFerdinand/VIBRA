@@ -1,7 +1,7 @@
 """Small-displacement, linear elastic statics: K_ff u_f = F_f."""
 
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import numpy as np
 from scipy import linalg
@@ -21,6 +21,7 @@ class StaticResult:
     reactions: Matrix  # [Fx(N), Fy(N), Mz(N m)], zero on free DOFs
     element_end_forces: dict[int, Matrix]  # local [N1,V1,M1,N2,V2,M2]
     relative_residual: float
+    mount_forces_N: dict[int, float] = field(default_factory=dict)
 
 
 def solve_static(model: FrameModel, config: AnalysisConfig | None = None) -> StaticResult:
@@ -54,4 +55,8 @@ def solve_static(model: FrameModel, config: AnalysisConfig | None = None) -> Sta
         reactions.reshape(-1, 3),
         end_forces,
         relative,
+        {
+            entry.mount.id: float(entry.mount.stiffness * (entry.extension @ displacement))
+            for entry in assembly.mounts
+        },
     )

@@ -66,7 +66,8 @@ nodes. A single connected frame is supported, including oriented members.
 
 Only prescribed **zero** UX/UY/RZ values are currently supported. A fixed support
 is all three constraints at a node; individual zero constraints can model rollers
-and pins. Internal hinges/releases, elastic supports, nonzero imposed displacement,
+and pins. Linear elastic ground/relative supports are now supplied by mount elements.
+Internal hinges/releases, nonzero imposed displacement,
 contact and multipoint constraints are unsupported. No penalty stiffness is used.
 
 Partitioning into free f and constrained c gives Kff uf = Ff with uc = 0.
@@ -128,3 +129,13 @@ Version 0.3 reuses the same K, consistent M, proportional damping and exact zero
 constraints for implicit Newmark average acceleration. The [transient formulation](transient-response.md)
 derives the time integration, finite force-jump treatment, energy/work balance and
 dynamic support reaction recovery. The static/modal/harmonic formulations remain intact.
+
+## Concentrated inertia and linear mounts (0.6)
+
+Additional rigid-body mass and COM Jz are assembled with the exact infinitesimal
+parallel-axis/coupling matrix. Directional ground/relative spring-dampers use
+K=k*B.T*B and C=c*B.T*B from rigid offset-point kinematics. Total C is
+alpha*M+beta*K+C_mount; full nonproportional damping is retained. The global
+quadratic energies include all added matrices. Free modes and singular reduced
+mass matrices are reported rather than regularized. See the full
+[inertia/mount derivation, reaction conventions and limitations](installed-motor-dynamics.md).

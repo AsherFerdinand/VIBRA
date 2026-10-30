@@ -14,10 +14,17 @@ from vibra.solvers.transient import TimeGrid
 from vibra.studies.nvh import NVHConfig, SupportDesign, run_nvh_study
 from vibra.visualization.nvh import comparison_figures, geometry_plot
 from vibra.visualization.plots import beam_shape, bending_moment
+from vibra.workbench.installed import workspace as installed_workspace
 
 
 def workspace() -> None:
     st.subheader("Automotive NVH Study")
+    investigation = st.radio(
+        "Investigation", ("Bare rail A/B (0.5 reference)", "Installed motor A/B/C"), horizontal=True
+    )
+    if investigation == "Installed motor A/B/C":
+        installed_workspace()
+        return
     st.caption(
         "Equivalent motor-interface support rail · prescribed forces · bare rail inertia only"
     )

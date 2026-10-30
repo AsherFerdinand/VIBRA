@@ -86,7 +86,7 @@ class HarmonicResult:
     phase_radians: Matrix  # zero placeholder where phase_defined is False
     phase_defined: NDArray[np.bool_]
     natural_frequencies_hz: Matrix  # all undamped free-DOF natural frequencies
-    modal_damping_ratios: Matrix
+    modal_damping_ratios: Matrix  # diagonal phi.T C phi/(2 omega); not decoupled for mounts
     reciprocal_condition: Matrix  # equilibrated inverse-norm estimate, cancellation adjusted
     backward_errors: Matrix
     peaks: tuple[SampledPeak, ...]  # strictly interior sampled local maxima
@@ -116,20 +116,26 @@ def solve_harmonic(model: FrameModel, config: HarmonicConfig) -> HarmonicResult:
         )
     ks = scale[:, None] * stiffness * scale[None, :]
     ms = scale[:, None] * mass * scale[None, :]
-    cs = config.damping.alpha * ms + config.damping.beta * ks
+    cs = (
+        config.damping.alpha * ms
+        + config.damping.beta * ks
+        + scale[:, None]
+        * assembly.mount_damping[np.ix_(assembly.free, assembly.free)]
+        * scale[None, :]
+    )
     if not np.all(np.isfinite(cs)) or not np.all(np.isfinite(force)):
         raise SolverError("Damping or superposed forces overflowed; check SI inputs.")
     try:
-        eigenvalues = linalg.eigvalsh(ks, ms)
+        eigenvalues, eigenvectors = linalg.eigh(ks, ms)
     except linalg.LinAlgError as exc:
         raise SolverError("Harmonic mass/stiffness eigensolve failed; check definiteness.") from exc
     if np.any(eigenvalues <= 0) or not np.all(np.isfinite(eigenvalues)):
         raise SolverError("Invalid natural frequencies in harmonic model.")
     natural_omega = np.sqrt(eigenvalues)
     natural_hz = natural_omega / (2 * np.pi)
-    damping_ratios = (
-        config.damping.alpha / (2 * natural_omega) + config.damping.beta * natural_omega / 2
-    )
+    # Diagonal modal damping measures only; off-diagonal coupling is retained
+    # by the direct complex solve. These are not decoupled modal damping ratios.
+    damping_ratios = np.sum(eigenvectors * (cs @ eigenvectors), axis=0) / (2 * natural_omega)
     if not np.all(np.isfinite(damping_ratios)):
         raise SolverError("Modal damping ratios overflowed; check coefficients.")
     frequencies = np.asarray(config.frequencies_hz, dtype=np.float64)

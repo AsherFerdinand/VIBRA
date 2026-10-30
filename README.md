@@ -29,6 +29,9 @@ assumptions and limits.
 - **Automotive NVH engineering study**: a reproducible bare support-rail comparison
   orchestrating static/modal/harmonic/transient/spectral solvers, controlled parameter
   and station studies, convergence checks, JSON/Markdown reports and actual figures.
+- **Installed motor dynamics (0.6)**: concentrated mass/COM rotational inertia with
+  offset coupling; ground or relative directional spring-dampers; exact rigid offset
+  kinematics; bare/rigid/isolated motor comparisons and force-transmission studies.
 - Separate mass-spring-damper SDOF model: free/harmonic forcing, initial displacement
   and velocity, under/critical/overdamping, time responses and mechanical energy.
 - Streamlit + Plotly workbench for static cantilevers, cantilever modes, harmonic
@@ -45,7 +48,7 @@ Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/). The lockfile and CI 
 Python 3.12. No MATLAB, ANSYS, Docker, database or credentials are needed.
 
 ```bash
-git clone --branch feat/automotive-nvh-case-study --single-branch https://github.com/AsherFerdinand/VIBRA.git
+git clone --branch feat/installed-motor-dynamics --single-branch https://github.com/AsherFerdinand/VIBRA.git
 cd VIBRA
 uv sync --frozen
 uv run streamlit run frontend/app.py --server.address 0.0.0.0 --server.port 8501
@@ -67,7 +70,7 @@ until the next solve.
 ## Equations and verification
 
 Static equilibrium: **Ku = F**. Undamped modes: **Kφ = ω²Mφ**, **f = ω/(2π)**.
-Harmonic FEM: **(K + jωC − ω²M)U = F**, with **C = αM + βK**.
+Harmonic FEM: **(K + jωC − ω²M)U = F**, with **C = αM + βK + C_mount**.
 SDOF: **mẍ + cẋ + kx = F₀ sin(2πft)**.
 
 A cantilever under transverse tip load F has δ = FL³/(3EI) and θ = FL²/(2EI).
@@ -243,18 +246,46 @@ are suitable for educational meshes. It does not include shear deformation,
 cross-sectional rotary inertia, distributed loads, internal hinges, nonzero
 prescribed displacement, geometric nonlinearity, stress recovery, 3D FEM or contact. Harmonic FEM supports proportional
 viscous damping, constant load phasors and zero supports; frequency-dependent load
-spectra, nonproportional damping and base excitation are not included. Transient
-FEM uses uniform steps, proportional damping, aligned force jumps and fixed supports;
+spectra and base excitation are not included. Explicit mount damping can be
+nonproportional and is included directly. Transient FEM uses uniform steps,
+Rayleigh plus explicit mount damping, aligned force jumps and fixed supports;
 it does not implement nonlinear dynamics, moving supports or Dirac impulses.
 Slenderness, displacement size and high-mode validity remain engineering judgments; a passed algebraic
 residual is not proof of physical model suitability. The UI warns for L/h < 10
 and displacement exceeding 5% of length (harmonic checks use a complex translation norm).
 
-Next: verified **motor inertia and mount compliance** for installed-system studies,
-with measured-force/FRF work and mode tracking as subsequent steps. Harmonic (0.2),
-transient FEM (0.3), signal diagnostics (0.4) and the support-rail NVH study (0.5)
-are implemented.
+Next: verified **base motion and chassis force paths**, controlled mode tracking,
+then measured mount/force/FRF comparisons. Motor inertia and compliant mounts (0.6)
+join the implemented harmonic (0.2), transient (0.3), signal (0.4) and bare-rail (0.5)
+capabilities.
 FastAPI and React remain future options; the numerical core is already independent of the workbench interface.
 
 VIBRA is independently developed and is not affiliated with ANSYS.
 Licensed under the [MIT License](LICENSE).
+
+## Installed motor and compliant mounts (0.6.0)
+
+Select **Automotive NVH Study → Installed motor A/B/C**. The original bare-rail
+A/B investigation remains available. A 12 kg idealized motor lowers the first
+frequency from 49.512 Hz to 6.696 Hz with rigid attachment and 5.492 Hz with relative
+isolators. At the assumed 60 Hz force, root-force ratios are 3.932, 0.0906 and 0.0333;
+isolators add 2.5 mm static movement. These are frequency-specific tradeoffs, not
+an optimum or measured motor-mount behavior.
+
+![Computed installed motor comparison](docs/results/installed-comparison.svg)
+
+```bash
+uv run vibra-verify-installed
+uv run vibra-installed-study
+uv run python examples/installed_motor_study.py
+uv run python scripts/generate_installed_portfolio.py
+```
+
+Read [installed model theory and results](docs/installed-motor-dynamics.md), the
+[generated report](docs/results/installed-study.md) and
+[independent benchmark tolerances](docs/results/installed-verification.json).
+Full bounded JSON/Markdown/HTML outputs are in `artifacts/installed-motor-study/`.
+Mount damping is assembled independently of Rayleigh damping; modal analysis is
+undamped. Energy accounting includes added inertia, spring energy and dashpot loss.
+These planar linear models do not establish production accuracy, fatigue life,
+acoustic performance, vehicle NVH, experimental validation or ANSYS correlation.

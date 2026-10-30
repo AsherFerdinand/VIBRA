@@ -8,9 +8,9 @@ elimination. Materials are linear elastic, strains/displacements are small and
 joints rigid. Only stable supported connected frames are currently accepted;
 free-free rigid-body dynamics and moving supports are not implemented.
 
-C = αM + β_R K uses the same validated undamped, mass-, stiffness-proportional and
+C = αM + β_R K + C_mount uses the same validated undamped, mass-, stiffness-proportional and
 Rayleigh models as harmonic analysis. α has units s⁻¹, β_R has units s. Both are
-nonnegative; modal ζn = α/(2ωn) + β_R ωn/2. These are assumed viscous coefficients,
+nonnegative; without C_mount, modal ζn = α/(2ωn) + β_R ωn/2. These are assumed viscous coefficients,
 not experimentally identified material properties. **β_R is not the Newmark
 parameter β_N.** See [harmonic damping theory](harmonic-response.md).
 
@@ -102,7 +102,10 @@ no pre-simulation loading history is inferred.
 
 Kinetic energy T = ½vᵀMv, elastic strain energy V = ½uᵀKu and mechanical energy
 E = T+V use the same consistent matrices as the solve. No rotary inertia beyond
-that implicit in transverse Hermite interpolation is added.
+that implicit in transverse Hermite interpolation is added for beam elements.
+Version 0.6 additionally includes explicitly supplied nodal rigid-body mass/Jz and
+linear mount stiffness/damping in the same matrices and energy quadratures. Full
+nonproportional mount damping is retained. See [installed dynamics](installed-motor-dynamics.md).
 
 The work/dissipation quadratures are chosen consistently with average acceleration:
 

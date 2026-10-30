@@ -162,7 +162,7 @@ def _factor(matrix: Matrix, tolerance: float, name: str) -> _Factor:
 
 
 def solve_transient(model: FrameModel, config: TransientConfig) -> TransientResult:
-    """Reuse FEM K,M and C=αM+βK; no penalties, mass lumping or algorithmic damping.
+    """Reuse FEM K,M and C=αM+βK+C_mount; no penalties, mass lumping or algorithmic damping.
 
     FrameModel.loads is static-only. At aligned finite force jumps, u and v remain
     continuous and acceleration is reset through M Δa = ΔF before the next step.
@@ -180,7 +180,13 @@ def solve_transient(model: FrameModel, config: TransientConfig) -> TransientResu
         assembly, AnalysisConfig(stability_tolerance=config.stability_tolerance)
     )
     ks, ms = scale[:, None] * k * scale[None, :], scale[:, None] * m * scale[None, :]
-    cs = config.damping.alpha * ms + config.damping.beta * ks
+    cs = (
+        config.damping.alpha * ms
+        + config.damping.beta * ks
+        + scale[:, None]
+        * assembly.mount_damping[np.ix_(assembly.free, assembly.free)]
+        * scale[None, :]
+    )
     offsets = {node: 3 * i for i, node in enumerate(assembly.node_ids)}
     for value in (
         *config.loads,
@@ -330,7 +336,11 @@ def solve_transient(model: FrameModel, config: TransientConfig) -> TransientResu
         v * scale,
         a * scale,
     )
-    c_full = config.damping.alpha * assembly.mass + config.damping.beta * assembly.stiffness
+    c_full = (
+        config.damping.alpha * assembly.mass
+        + config.damping.beta * assembly.stiffness
+        + assembly.mount_damping
+    )
     reactions = (
         acceleration @ assembly.mass[:, assembly.fixed]
         + velocity @ c_full[:, assembly.fixed]

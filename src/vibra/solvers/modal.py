@@ -52,14 +52,20 @@ def solve_modal(model: FrameModel, config: AnalysisConfig | None = None) -> Moda
         if modes[pivot, column] < 0:
             modes[:, column] *= -1
     axial_energy = np.zeros(config.modes)
-    total_energy = np.zeros(config.modes)
     for entry in assembly.elements:
         local = entry.matrices.transform @ modes[entry.dofs, :]
         delta = local[3] - local[0]
         axial_energy += entry.matrices.stiffness[0, 0] * delta**2
-        total_energy += np.sum(local * (entry.matrices.stiffness @ local), axis=0)
+    total_energy = np.sum(modes * (assembly.stiffness @ modes), axis=0)
+    mount_energy = np.zeros(config.modes)
+    for mount in assembly.mounts:
+        mount_energy += mount.mount.stiffness * (mount.extension @ modes) ** 2
     fraction = axial_energy / total_energy
     families = tuple("axial" if f > 0.9 else "bending" if f < 0.1 else "coupled" for f in fraction)
+    families = tuple(
+        "mount/coupled" if mount_energy[j] / total_energy[j] > 0.1 else family
+        for j, family in enumerate(families)
+    )
     residuals = []
     for j, eigenvalue in enumerate(eigenvalues):
         vector = modes[assembly.free, j]

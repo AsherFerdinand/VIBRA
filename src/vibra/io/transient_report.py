@@ -2,6 +2,7 @@
 
 import numpy as np
 
+from vibra.core.assembly import assemble
 from vibra.core.models import FrameModel
 from vibra.io.reports import engineering_report
 from vibra.solvers.transient import TransientConfig, TransientResult
@@ -38,6 +39,7 @@ def transient_report(
     if count < 2:
         raise ValueError("Too many output channels for a bounded transient export.")
     indices = np.unique(np.linspace(0, len(result.time) - 1, count, dtype=int))
+    assembly = assemble(model)
     report = engineering_report(
         "FEM transient response",
         {"model": model, "transient": config, "static_loads_used": False},
@@ -68,6 +70,19 @@ def transient_report(
                 "force_N_or_Nm": result.reactions[indices],
                 "definition": "(M a + C v + K u - F)c; right-hand acceleration and force",
             },
+            "mount_forces_N": {
+                str(entry.mount.id): (
+                    entry.mount.stiffness * (result.displacement[indices] @ entry.extension)
+                    + (entry.mount.damping + config.damping.beta * entry.mount.stiffness)
+                    * (result.velocity[indices] @ entry.extension)
+                )
+                for entry in assembly.mounts
+            },
+            "mount_force_convention": (
+                "Includes explicit c plus beta*k; positive resists B*u. "
+                "Force on A is -n*f, B +n*f; node_b=None is ground. "
+                "Ground mount forces are separate from fixed-DOF reactions."
+            ),
             "energy_J": {
                 "kinetic": result.kinetic_energy[indices],
                 "elastic_strain": result.strain_energy[indices],
@@ -94,7 +109,7 @@ def transient_report(
             "numerical_warnings": result.numerical_warnings,
             "assumptions_and_limitations": [
                 "Linear elastic Euler–Bernoulli planar frame; small displacement; dense matrices",
-                "Proportional viscous damping; no base excitation or moving/nonzero supports",
+                "Rayleigh plus explicit mount damping; no base excitation or moving supports",
                 "Consistent mass and exact zero constraints; no mass lumping or regularization",
                 "Uniform time step; duration an integer multiple of dt; force jumps align to grid",
                 "Forces have finite jumps, not Dirac impulses; u,v remain continuous at jumps",

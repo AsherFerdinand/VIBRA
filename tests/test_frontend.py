@@ -217,3 +217,38 @@ def test_automotive_nvh_workspace_runs_real_study_and_exports() -> None:
     assert not app.exception
     assert app.error
     assert "nvh_study" not in app.session_state
+
+
+def test_installed_motor_workspace_executes_and_interacts() -> None:
+    app = AppTest.from_file(str(APP), default_timeout=60).run()
+    app.sidebar.selectbox[0].select("Automotive NVH Study").run()
+    next(widget for widget in app.radio if widget.label == "Investigation").set_value(
+        "Installed motor A/B/C"
+    ).run()
+    next(
+        widget for widget in app.button if widget.label == "Run installed motor study"
+    ).click().run()
+    assert not app.exception
+    assert not app.error
+    study = app.session_state["installed_study"]
+    assert all(study.checks.values())
+    assert study.cases[2].model.mounts[0].node_b == 8
+    next(widget for widget in app.selectbox if widget.label == "Installed topology").select(
+        "isolated"
+    ).run()
+    next(widget for widget in app.slider if widget.label == "Installed mode number").set_value(
+        2
+    ).run()
+    next(
+        widget for widget in app.slider if widget.label == "Installed deformation time [s]"
+    ).set_value(0.1).run()
+    assert not app.exception
+    next(
+        widget for widget in app.number_input if widget.label == "Installed time step [s]"
+    ).set_value(0.0003)
+    next(
+        widget for widget in app.button if widget.label == "Run installed motor study"
+    ).click().run()
+    assert not app.exception
+    assert app.error
+    assert "installed_study" not in app.session_state

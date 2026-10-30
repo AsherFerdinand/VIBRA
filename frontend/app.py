@@ -30,7 +30,7 @@ from vibra.workbench.transient import workspace as transient_workspace
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 st.set_page_config(page_title="VIBRA | Engineering Workbench", page_icon="◫", layout="wide")
 st.title("VIBRA")
-st.caption("STRUCTURAL DYNAMICS & FEM WORKBENCH · 0.5 · SI UNITS")
+st.caption("STRUCTURAL DYNAMICS & FEM WORKBENCH · 0.6 · SI UNITS")
 analysis = st.sidebar.selectbox(
     "Analysis",
     [

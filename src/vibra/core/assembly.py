@@ -8,7 +8,7 @@ from scipy import linalg
 
 from vibra.core.element import ElementMatrices, Matrix, beam_matrices
 from vibra.core.errors import UnstableModelError
-from vibra.core.models import AnalysisConfig, BeamElement, FrameModel
+from vibra.core.models import AnalysisConfig, BeamElement, FrameModel, LinearMount
 
 
 @dataclass(frozen=True)
@@ -16,6 +16,12 @@ class AssembledElement:
     element: BeamElement
     dofs: NDArray[np.int64]
     matrices: ElementMatrices
+
+
+@dataclass(frozen=True)
+class AssembledMount:
+    mount: LinearMount
+    extension: Matrix  # full global row B; extension = B @ u
 
 
 @dataclass(frozen=True)
@@ -27,6 +33,8 @@ class Assembly:
     free: NDArray[np.int64]
     fixed: NDArray[np.int64]
     elements: tuple[AssembledElement, ...]
+    mount_damping: Matrix
+    mounts: tuple[AssembledMount, ...]
 
 
 def assemble(model: FrameModel) -> Assembly:
@@ -43,6 +51,36 @@ def assemble(model: FrameModel) -> Assembly:
         stiffness[np.ix_(dofs, dofs)] += matrices.global_stiffness
         mass[np.ix_(dofs, dofs)] += matrices.global_mass
         assembled.append(AssembledElement(element, dofs, matrices))
+    for body in model.nodal_masses:
+        x, y = body.offset
+        m = body.mass
+        local = np.array(
+            [[m, 0, -m * y], [0, m, m * x], [-m * y, m * x, body.inertia_z + m * (x * x + y * y)]]
+        )
+        offset = offsets[body.node]
+        mass[offset : offset + 3, offset : offset + 3] += local
+    mount_damping = np.zeros((size, size))
+    mounts = []
+    for mount in sorted(model.mounts, key=lambda item: item.id):
+        angle = np.deg2rad(mount.angle_degrees % 360)
+        nx, ny = np.cos(angle), np.sin(angle)
+        # Canonical axis directions have exact zeros, avoiding artificial tiny couplings.
+        nx, ny = (0.0 if abs(nx) < 1e-15 else nx), (0.0 if abs(ny) < 1e-15 else ny)
+        row = np.zeros(size)
+        for node, point, sign in (
+            (mount.node_a, mount.offset_a, 1),
+            (mount.node_b, mount.offset_b, -1),
+        ):
+            if node is not None:
+                x, y = point
+                offset = offsets[node]
+                row[offset : offset + 3] += sign * np.array([nx, ny, -nx * y + ny * x])
+        outer = np.outer(row, row)
+        stiffness += mount.stiffness * outer
+        mount_damping += mount.damping * outer
+        mounts.append(AssembledMount(mount, row))
+    if not all(np.all(np.isfinite(matrix)) for matrix in (stiffness, mass, mount_damping)):
+        raise UnstableModelError("Assembled matrices overflowed; check SI magnitudes.")
     for load in model.loads:
         offset = offsets[load.node]
         force[offset : offset + 3] += [load.fx, load.fy, load.mz]
@@ -50,7 +88,17 @@ def assemble(model: FrameModel) -> Assembly:
         sorted(offsets[c.node] + int(c.dof) for c in model.constraints), dtype=np.int64
     )
     free = np.setdiff1d(np.arange(size, dtype=np.int64), fixed)
-    return Assembly(node_ids, stiffness, mass, force, free, fixed, tuple(assembled))
+    return Assembly(
+        node_ids,
+        stiffness,
+        mass,
+        force,
+        free,
+        fixed,
+        tuple(assembled),
+        mount_damping,
+        tuple(mounts),
+    )
 
 
 def constrained_system(assembly: Assembly, config: AnalysisConfig) -> tuple[Matrix, Matrix, Matrix]:

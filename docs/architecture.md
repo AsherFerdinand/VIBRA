@@ -172,3 +172,27 @@ a generated Markdown report and summary JSON; full JSON stays in artifacts/.
 The [case-study documentation](automotive-nvh-study.md) defines the force-controlled
 bare-rail boundary and separates it from motor/vehicle dynamics, strength or acoustic
 claims. No additional dependencies or cloud services are used.
+
+## Installed mass and mounts (0.6)
+
+`core/models.py` adds immutable `NodalMass` and `LinearMount` inputs. Connectivity
+includes relative mounts, allowing a rigid-body reference node without beam elements
+or artificial stiffness. `core/assembly.py` alone owns inertia offsets and mount
+kinematic maps, adding symmetric K/M and exposing explicit `mount_damping` separately.
+`core/attachments.py` recovers explicitly specified spring/dashpot forces.
+
+Static and modal algorithms use the augmented matrices unchanged. Modal families
+account for mount strain energy. Harmonic and transient solvers add C_mount to the
+existing alpha*M+beta*K and keep the direct complex/Newmark formulations, numerical
+guards and exact elimination. Modal damping measures include full C but do not
+remove off-diagonal coupling. Static and dynamic reports expose mount forces with
+explicit signs and damping definitions. Existing fields and console commands remain.
+
+`studies/installed.py` builds bare/rigid/relative-isolator topologies and orchestrates
+solvers, force recovery, sensitivities and common-time displacement refinement.
+`io/installed_report.py`, `visualization/installed.py`, `workbench/installed.py` and
+`studies/installed_cli.py` preserve numerical/UI/report separation. The original
+0.5 bare study is the default investigation in the same workspace.
+`verification/installed_benchmarks.py` supplies independent equations and an executable
+report; `scripts/generate_installed_portfolio.py` produces real numerical figures.
+No dependencies or cloud services were added.

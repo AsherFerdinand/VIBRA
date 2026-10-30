@@ -45,8 +45,10 @@ For mass-normalized undamped mode n:
 **ζn = α/(2ωn) + βωn/2**.
 
 This is proportional viscous damping; β does not represent frequency-independent
-hysteretic loss. It does not capture arbitrary joint damping or nonproportional
-measured damping matrices. Coefficients are user assumptions, not identified
+hysteretic loss. Rayleigh coefficients do not capture arbitrary joint damping or nonproportional
+measured damping matrices. Version 0.6 additionally assembles explicit directional
+mount damping, C=alpha*M+beta*K+C_mount, which can be nonproportional. The full
+complex solve retains its coupling. See [installed dynamics](installed-motor-dynamics.md). Coefficients are user assumptions, not identified
 material constants. A Rayleigh fit over one band can overdamp other bands.
 Increasing damping lowers the measured example's response at its first natural
 frequency; it need not monotonically reduce every response near an antiresonance.
@@ -124,8 +126,8 @@ reference, not automatically to one particular load. For response less than or
 equal to 10⁻¹² of that channel's maximum amplitude, phase is marked undefined;
 the stored phase zero is only a placeholder. Plots leave gaps there.
 
-All undamped natural frequencies and corresponding proportional modal damping
-ratios are returned, not just visibly excited modes. `peaks` identifies strictly
+All undamped natural frequencies and diagonal modal damping measures
+phi.T*C*phi/(2*omega) are returned (proportional ratios without mount damping), not just visibly excited modes. `peaks` identifies strictly
 interior local maxima of each sampled amplitude curve. `sampled_maxima` separately
 records the greatest sample of each nonzero channel and flags sweep boundaries.
 Neither field identifies exact poles. Narrow peaks can be missed or underestimated;

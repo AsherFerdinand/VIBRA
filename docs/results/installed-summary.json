@@ -1,0 +1,122 @@
+{
+  "inputs": {
+    "rail": {
+      "name": "Baseline A",
+      "length": 0.45,
+      "width": 0.025,
+      "height": 0.012,
+      "young_modulus": 210000000000.0,
+      "density": 7850
+    },
+    "elements": 8,
+    "motor_mass_kg": 12,
+    "motor_inertia_kg_m2": 0.08,
+    "motor_height_m": 0.08,
+    "mount_span_m": 0.12,
+    "stiffness_x_N_per_m": 200000,
+    "stiffness_y_N_per_m": 80000,
+    "damping_x_Ns_per_m": 30,
+    "damping_y_Ns_per_m": 60,
+    "stiffness_beta_s": 8e-05,
+    "static_force_N": -200,
+    "harmonic_force_N": 2,
+    "operating_hz": 60,
+    "sweep": {
+      "start_hz": 0,
+      "stop_hz": 120.0,
+      "points": 601
+    },
+    "pulse_force_N": -20,
+    "pulse_width_s": 0.01,
+    "grid": {
+      "duration": 0.8,
+      "time_step": 0.0002
+    }
+  },
+  "assumptions": [
+    "Illustrative linear planar assembly; no measured motor or mount properties",
+    "Bare rail distributed mass plus one additional rigid motor body; no double counting",
+    "Rigid case: motor COM is offset above rail tip; no artificial stiff beam",
+    "Isolated case: separate motor reference node at COM, two relative X/Y mount pairs",
+    "Massless rigid crossarm at rail tip; mount span is not a flexible structural element",
+    "These mounts connect motor to rail, not rail to ground; fixed root is the ground support",
+    "Offsets use infinitesimal planar rotation; no shear, torsion, contact or nonlinear elastomer",
+    "Static 200 N default is prescribed interface force, not gravity-coupled motor weight",
+    "Dynamic cases perturb linear static equilibrium; no prestress/geometric stiffness",
+    "Modal analysis excludes all damping; mount/coupled labels describe strain participation",
+    "C=beta*K+C_mount in this study; beta applies to beam AND spring stiffness",
+    "Reported mount forces include explicit c plus beta*k; root force includes rail inertia",
+    "Transmission is a force ratio for prescribed motor force, not base-motion transmissibility",
+    "No experimental validation, ANSYS correlation, production, fatigue, acoustic or vehicle claims"
+  ],
+  "cases": {
+    "bare": {
+      "structural_mass_kg": 1.05975,
+      "additional_motor_mass_kg": 0.0,
+      "static_interface_displacement_m": 0.008035714285713954,
+      "static_rail_tip_displacement_m": 0.008035714285713954,
+      "first_natural_hz": 49.512197622066964,
+      "operating_interface_amplitude_m": 0.00016372319148528548,
+      "operating_rail_amplitude_m": 0.00016372319148528548,
+      "operating_root_force_ratio": 3.9323250882583984,
+      "operating_rail_transmitted_force_ratio": 1.0,
+      "pulse_peak_interface_displacement_m": 0.0011952467986499947,
+      "pulse_peak_interface_velocity_m_per_s": 0.36100753425646437,
+      "pulse_peak_interface_acceleration_m_per_s2": 114.8083075411259,
+      "pulse_peak_root_force_N": 49.91039049549851,
+      "relative_energy_balance_error": 5.525858268804858e-13,
+      "static_root_balance_N": 4.001776687800884e-11
+    },
+    "rigid": {
+      "structural_mass_kg": 1.05975,
+      "additional_motor_mass_kg": 12,
+      "static_interface_displacement_m": 0.008035714285713954,
+      "static_rail_tip_displacement_m": 0.008035714285713954,
+      "first_natural_hz": 6.695712850563952,
+      "operating_interface_amplitude_m": 1.2187929481797132e-06,
+      "operating_rail_amplitude_m": 1.2187929481797132e-06,
+      "operating_root_force_ratio": 0.09062339275782794,
+      "operating_rail_transmitted_force_ratio": 0.039424121039126105,
+      "pulse_peak_interface_displacement_m": 0.00021723993595075105,
+      "pulse_peak_interface_velocity_m_per_s": 0.009854045335976247,
+      "pulse_peak_interface_acceleration_m_per_s2": 1.5483245802708379,
+      "pulse_peak_root_force_N": 7.762735033991211,
+      "relative_energy_balance_error": 4.70934769796611e-13,
+      "static_root_balance_N": 4.001776687800884e-11
+    },
+    "isolated": {
+      "structural_mass_kg": 1.05975,
+      "additional_motor_mass_kg": 12,
+      "static_interface_displacement_m": 0.010535714285715458,
+      "static_rail_tip_displacement_m": 0.008035714285715458,
+      "first_natural_hz": 5.491657054420896,
+      "operating_interface_amplitude_m": 1.1653250500107642e-06,
+      "operating_rail_amplitude_m": 1.3007932906977081e-06,
+      "operating_root_force_ratio": 0.033320597990248654,
+      "operating_rail_transmitted_force_ratio": 0.006440027972466786,
+      "pulse_peak_interface_displacement_m": 0.00025227744938660277,
+      "pulse_peak_interface_velocity_m_per_s": 0.010171293107711038,
+      "pulse_peak_interface_acceleration_m_per_s2": 1.6215025790060313,
+      "pulse_peak_root_force_N": 5.063692000398049,
+      "relative_energy_balance_error": 3.563700561226402e-13,
+      "static_root_balance_N": 7.639755494892597e-11
+    }
+  },
+  "convergence": [
+    {
+      "kind": "time dt vs dt/2, selected mesh",
+      "relative_monitored_displacement_difference": 0.000254472548341428
+    },
+    {
+      "kind": "selected mesh vs 16 elements, base dt",
+      "relative_monitored_displacement_difference": 6.681034274177463e-09
+    }
+  ],
+  "checks": {
+    "static_equilibrium": true,
+    "energy_balance": true,
+    "time_difference_below_one_percent": true,
+    "mesh_difference_below_one_percent": true
+  },
+  "conclusion": "At 60 Hz, rigid/isolated root force ratios are 0.090623/0.033321; rail transmission ratios are 0.039424/0.00644. Softer mounts add low-frequency compliance and coupled resonances; reduced transmission in one frequency band does not establish a universally optimal mount. Root and mount force ratios differ because the rail has its own distributed inertia."
+}

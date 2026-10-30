@@ -123,3 +123,18 @@ reciprocity, report integrity, invalid inputs and the workbench.
 acceptance targets from automotive performance criteria. Fine-reference zero is
 not exact truth; the study does not validate motor inertia, mounts, component
 strength/fatigue, acoustic noise, experimental modal parameters or vehicle NVH.
+
+## Installed inertia and compliant mounts (0.6)
+
+Run `vibra-verify-installed`. [Recorded checks](results/installed-verification.json)
+include exact mass-spring/static/rotational frequencies, offset kinetic energy,
+coupled inertia eigenvalues, viscously damped complex FRF, free/forced transients,
+energy and the continuum point-tip-mass equation. Each records its tolerance.
+Additional pytest coverage checks objective offset connector kinematics, matrix
+symmetry/definiteness, nonproportional damping, constraints, zero/rigid stiffness
+limits, force transmission, repeatability, report integrity and real UI interaction.
+The installed study separately checks monitored displacement time/mesh refinement;
+this does not establish converged high-frequency acceleration or reactions.
+See [engineering interpretation](installed-motor-dynamics.md). CI retains all earlier
+checks and now installs/runs the wheel outside the checkout. No experimental or
+ANSYS validation is implied by numerical agreement.

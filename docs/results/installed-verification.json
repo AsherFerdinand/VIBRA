@@ -1,0 +1,134 @@
+{
+  "analysis": "Installed inertia and mount analytical verification",
+  "experimental_validation": false,
+  "ansys_correlation": false,
+  "checks": [
+    {
+      "name": "mass_spring_frequency_relative",
+      "error": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "static_spring_displacement_relative",
+      "error": 1.1102230246251565e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "mount_damped_complex_harmonic_relative",
+      "error": 3.2823319296462633e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "free_decay_c0.0_relative",
+      "error": 0.0001521495911178429,
+      "tolerance": 0.0002,
+      "passed": true
+    },
+    {
+      "name": "discrete_energy_c0.0_relative",
+      "error": 5.8980598183211094e-15,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "conservative_energy_relative",
+      "error": 5.995204332975845e-15,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "free_decay_c3.0_relative",
+      "error": 7.529419758516725e-05,
+      "tolerance": 0.0002,
+      "passed": true
+    },
+    {
+      "name": "discrete_energy_c3.0_relative",
+      "error": 5.117434254131581e-15,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    {
+      "name": "damped_energy_increase_J",
+      "error": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "mount_damped_forced_transient_relative",
+      "error": 9.484631552844786e-05,
+      "tolerance": 0.0003,
+      "passed": true
+    },
+    {
+      "name": "offset_inertia_kinetic_energy_relative",
+      "error": 2.220446049250313e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "offset_mass_symmetry",
+      "error": 0.0,
+      "tolerance": 1e-14,
+      "passed": true
+    },
+    {
+      "name": "rotational_inertia_frequency_relative",
+      "error": 0.0,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "coupled_inertia_eigenvalues_relative",
+      "error": 6.661338147750939e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "name": "stiffness_symmetry",
+      "error": 0.0,
+      "tolerance": 1e-14,
+      "passed": true
+    },
+    {
+      "name": "mount_damping_symmetry",
+      "error": 0.0,
+      "tolerance": 1e-14,
+      "passed": true
+    },
+    {
+      "name": "coupled_mass_positive_definite",
+      "error": 0.0,
+      "tolerance": 0.5,
+      "passed": true
+    },
+    {
+      "name": "mount_stiffness_semidefinite",
+      "error": 0.0,
+      "tolerance": 0.5,
+      "passed": true
+    },
+    {
+      "name": "continuum_tip_mass_4_elements_relative",
+      "error": 2.473655186907564e-06,
+      "tolerance": 1e-05,
+      "passed": true
+    },
+    {
+      "name": "continuum_tip_mass_8_elements_relative",
+      "error": 1.5782744755554745e-07,
+      "tolerance": 1e-05,
+      "passed": true
+    },
+    {
+      "name": "continuum_tip_mass_16_elements_relative",
+      "error": 8.80907569111855e-09,
+      "tolerance": 1e-05,
+      "passed": true
+    }
+  ],
+  "all_passed": true
+}
