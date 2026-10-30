@@ -93,3 +93,52 @@ def test_harmonic_workspace_damping_models(kind: str) -> None:
     assert app.session_state["harmonic_solved"]["config"].damping.kind == kind
     if kind == "undamped":
         assert app.warning
+
+
+@pytest.mark.parametrize("excitation", ["pulse", "step", "harmonic", "sampled"])
+def test_transient_workspace_excitation_and_time_slider(excitation: str) -> None:
+    import numpy as np
+
+    app = AppTest.from_file(str(APP), default_timeout=30).run()
+    app.sidebar.selectbox[0].select("Transient response").run()
+    next(widget for widget in app.selectbox if widget.label == "Time excitation").select(
+        excitation
+    ).run()
+    app.sidebar.button[0].click().run()
+    assert not app.exception
+    assert not app.error
+    assert "transient_solved" in app.session_state
+    saved = app.session_state["transient_solved"]
+    assert saved["config"].loads[0].kind == excitation
+    assert saved["result"].relative_energy_error < 1e-6
+    before = saved["result"].displacement.copy()
+    next(widget for widget in app.slider if widget.label == "Time sample").set_value(25).run()
+    assert not app.exception
+    np.testing.assert_allclose(app.session_state["transient_solved"]["result"].displacement, before)
+    assert app.metric[0].value == "0.025"
+    if excitation == "pulse":
+        app.checkbox[0].set_value(True).run()
+        assert not app.exception
+        assert not app.error
+
+
+def test_transient_workspace_initial_profile_and_invalid_grid() -> None:
+    app = AppTest.from_file(str(APP), default_timeout=30).run()
+    app.sidebar.selectbox[0].select("Transient response").run()
+    next(
+        widget for widget in app.number_input if widget.label == "Signed force [N] / moment [N m]"
+    ).set_value(0.0)
+    next(
+        widget
+        for widget in app.number_input
+        if widget.label == "Initial transverse tip displacement [m]"
+    ).set_value(0.001)
+    app.sidebar.button[0].click().run()
+    assert not app.exception
+    assert not app.error
+    assert app.session_state["transient_solved"]["result"].displacement[0, -2] == 0.001
+    next(widget for widget in app.number_input if widget.label == "Time step [s]").set_value(0.003)
+    app.sidebar.button[0].click().run()
+    assert not app.exception
+    assert app.error
+    assert "transient_solved" not in app.session_state

@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "method": "Newmark beta=1/4 gamma=1/2",
+  "verification_kind": "Independent analytical numerical verification",
+  "experimental_validation": false,
+  "ansys_correlation": false,
+  "sdof_inputs": {
+    "mass_kg": 1.1662857142857144,
+    "stiffness_N_per_m": 33600.00000000001
+  },
+  "static_equilibrium_relative_error": 1.3322676295501878e-15,
+  "time_convergence": [
+    {
+      "time_step_s": 0.001,
+      "relative_max_displacement_error": 0.07909830570016602,
+      "relative_energy_balance_error": 1.440602438184184e-15,
+      "max_backward_error": 2.1905020375162004e-16
+    },
+    {
+      "time_step_s": 0.0005,
+      "relative_max_displacement_error": 0.019826749880850907,
+      "relative_energy_balance_error": 4.116006966240529e-15,
+      "max_backward_error": 2.207355301984412e-16
+    },
+    {
+      "time_step_s": 0.00025,
+      "relative_max_displacement_error": 0.004959070866431266,
+      "relative_energy_balance_error": 3.087005224680389e-15,
+      "max_backward_error": 1.9553082166304515e-16
+    },
+    {
+      "time_step_s": 0.000125,
+      "relative_max_displacement_error": 0.0012401201765652428,
+      "relative_energy_balance_error": 4.733408011176591e-15,
+      "max_backward_error": 3.9109731907040377e-16
+    },
+    {
+      "time_step_s": 6.25e-05,
+      "relative_max_displacement_error": 0.00031004131033064735,
+      "relative_energy_balance_error": 1.4611824730153877e-14,
+      "max_backward_error": 2.1832720535232784e-16
+    }
+  ],
+  "damped_relative_max_displacement_error": 0.00036398742552164084,
+  "forced_relative_max_displacement_error": 0.00019698206396480508,
+  "damped_relative_energy_error": 2.787948443534154e-15,
+  "forced_relative_energy_error": 9.649582511091368e-16,
+  "continuum_inputs": {
+    "geometry": {
+      "length": 1.0,
+      "angle_degrees": 0.0
+    },
+    "material": {
+      "name": "Illustrative steel",
+      "young_modulus": 210000000000.0,
+      "density": 7850.0
+    },
+    "section": {
+      "area": 0.0004,
+      "second_moment": 1.3333333333333335e-08
+    },
+    "grid": {
+      "duration": 0.12,
+      "time_step": 1e-05
+    },
+    "unit_tip_half_sine_pulse_width_s": 0.04,
+    "continuum_modes": 128
+  },
+  "continuum_96_to_128_modes_relative_difference": 1.5782781790180006e-08,
+  "mesh_convergence": [
+    {
+      "elements": 2,
+      "relative_max_tip_error": 0.006102680896139441,
+      "relative_energy_balance_error": 1.0695885195423143e-14
+    },
+    {
+      "elements": 4,
+      "relative_max_tip_error": 0.0006474670455143224,
+      "relative_energy_balance_error": 6.005933359937823e-14
+    },
+    {
+      "elements": 8,
+      "relative_max_tip_error": 5.2977894556525756e-05,
+      "relative_energy_balance_error": 6.248474954521698e-13
+    }
+  ],
+  "checks": {
+    "static_equilibrium": true,
+    "zero_force_response": true,
+    "constraint_consistency": true,
+    "undamped_free_response": true,
+    "second_order_time_convergence": true,
+    "undamped_energy_conservation": true,
+    "damped_analytical_decay": true,
+    "damped_energy_balance": true,
+    "damped_energy_monotonic": true,
+    "forced_sdof_transient": true,
+    "forced_energy_balance": true,
+    "continuum_series_truncation": true,
+    "fem_mesh_convergence": true,
+    "eight_element_continuum_error": true
+  },
+  "passed": true
+}

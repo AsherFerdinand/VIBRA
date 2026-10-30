@@ -20,10 +20,13 @@ assumptions and limits.
 - **Verified FEM harmonic response**: direct complex frequency sweeps, harmonic
   nodal forces/moments with phases, undamped/mass/stiffness/Rayleigh damping,
   multiple response DOFs, amplitude/phase, sampled peaks and conditioning checks.
+- **Verified transient FEM dynamics**: implicit Newmark average acceleration,
+  step/harmonic/pulse/sampled forcing, initial states, multiple response DOFs,
+  dynamic reactions and complete mechanical-energy/work/dissipation accounting.
 - Separate mass-spring-damper SDOF model: free/harmonic forcing, initial displacement
   and velocity, under/critical/overdamping, time responses and mechanical energy.
 - Streamlit + Plotly workbench for static cantilevers, cantilever modes, harmonic
-  FEM and SDOF;
+  FEM, transient FEM and SDOF;
   parameter forms, mode selection, explicit display magnification and JSON reports.
 - Automated numerical verification and reproducible examples, including generated
   reports and standalone interactive HTML figures.
@@ -82,7 +85,7 @@ E = 210 GPa, ρ = 7850 kg/m³ and a −100 N tip force. The 16-element solver gi
 At 32 elements, all first three bending frequency errors are below **0.0003%**.
 The verification suite also checks matrix symmetry/definiteness, rigid-body modes,
 energy, orientation invariance, invalid models, SDOF analytical responses and all
-four interface workflows. Full tolerances and results are in
+five interface workflows. Full tolerances and results are in
 [verification](docs/verification.md) and the
 [machine-readable report](docs/results/verification.json).
 These are numerical verification and analytical benchmarks, **not experimental
@@ -111,6 +114,30 @@ claim that arbitrary user models are physically validated. See
 [harmonic theory, tolerances and results](docs/harmonic-response.md) and the
 [machine-readable harmonic report](docs/results/harmonic-verification.json).
 
+## Transient response workspace
+
+Version **0.3.0** adds **Transient response** with geometry/material/mesh inputs,
+proportional viscous damping, nodal time-dependent forces, a validated uniform
+step/duration, initial state and response selection. Inspect displacement, velocity,
+acceleration, mechanical energy, dissipated energy, external work and support reactions.
+Use the time slider or optional animation to inspect actual solved beam deformations
+with explicit magnification, then export a bounded engineering report.
+
+The solver uses **Newmark β_N=1/4, γ_N=1/2**. Finite force jumps keep displacement
+and velocity continuous and reset acceleration consistently. Singular/poorly
+conditioned systems and failed equilibrium/energy checks are rejected. Stability
+and discrete energy conservation do not imply temporal phase accuracy; check both
+time-step and mesh convergence. Sampled forcing uses documented linear interpolation.
+
+![Actual cantilever pulse response and energy accounting](docs/results/transient-response.svg)
+
+The steel cantilever pulse example reaches about **0.199 mm** peak tip displacement;
+post-pulse energy decays to **11.9%** at 1 s, with relative discrete energy residual
+about **4.6×10⁻¹²**. Independent SDOF and continuous-beam benchmarks demonstrate
+second-order time convergence and FEM spatial convergence. See the
+[transient formulation, conventions and tolerances](docs/transient-response.md)
+and [machine-readable report](docs/results/transient-verification.json).
+
 ## Reproduce results and quality checks
 
 ```bash
@@ -120,16 +147,19 @@ uv run ruff format --check .
 uv run mypy
 uv run vibra-verify
 uv run vibra-verify-harmonic
+uv run vibra-verify-transient
 uv run python examples/steel_cantilever.py
 uv run python examples/sdof_resonance.py
 uv run python examples/harmonic_cantilever.py
+uv run python examples/transient_cantilever.py
 uv run python scripts/generate_portfolio.py
 uv run python scripts/generate_harmonic_portfolio.py
+uv run python scripts/generate_transient_portfolio.py
 uv build
 ```
 
 Examples create `artifacts/steel-cantilever/`, `artifacts/sdof/` and
-`artifacts/harmonic-cantilever/` with full JSON
+`artifacts/harmonic-cantilever/` and `artifacts/transient-cantilever/` with engineering JSON
 results and self-contained interactive HTML plots. `vibra-verify` writes
 `artifacts/verification.json` and fails if benchmark targets fail. The portfolio
 script regenerates the actual SVG/PNG figures and reference report in `docs/results/`.
@@ -148,15 +178,17 @@ joints, nodal forces/moments and zero displacement constraints. Dense matrices
 are suitable for educational meshes. It does not include shear deformation,
 cross-sectional rotary inertia, distributed loads, internal hinges, nonzero
 prescribed displacement, geometric nonlinearity, stress recovery, 3D FEM, contact,
-FEM transient response or FFT diagnostics. Harmonic FEM supports proportional
+FFT diagnostics. Harmonic FEM supports proportional
 viscous damping, constant load phasors and zero supports; frequency-dependent load
-spectra, nonproportional damping and base excitation are not included.
+spectra, nonproportional damping and base excitation are not included. Transient
+FEM uses uniform steps, proportional damping, aligned force jumps and fixed supports;
+it does not implement nonlinear dynamics, moving supports or Dirac impulses.
 Slenderness, displacement size and high-mode validity remain engineering judgments; a passed algebraic
 residual is not proof of physical model suitability. The UI warns for L/h < 10
-and static displacement or harmonic complex translation norm exceeding 5% of length.
+and displacement exceeding 5% of length (harmonic checks use a complex translation norm).
 
-Next: verified **FEM transient dynamics**, followed by signal diagnostics.
-Harmonic response and proportional damping are implemented in version 0.2.
+Next: verified **FFT and vibration signal diagnostics**. Harmonic response was
+implemented in version 0.2; transient FEM dynamics is implemented in version 0.3.
 FastAPI and React remain future options; the numerical core is already independent of the workbench interface.
 
 VIBRA is independently developed and is not affiliated with ANSYS.

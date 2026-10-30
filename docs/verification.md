@@ -21,7 +21,7 @@ figures and that report with `uv run python scripts/generate_portfolio.py`.
   undamped, critically damped, overdamped and harmonically forced SDOF solutions.
 - Physical invariants: undamped free-response energy conservation and damped
   free-response energy decay. Forced-response energy need not decay.
-- Integration: Streamlit's AppTest submits all four workflows and switches a
+- Integration: Streamlit's AppTest submits all five workflows and switches a
   displayed mode while preserving the submitted engineering model.
 - **Experimental validation: none.** No ANSYS comparisons have been performed.
 
@@ -87,3 +87,14 @@ checks. Run `uv run vibra-verify-harmonic`; it writes
 The [harmonic theory and verification](harmonic-response.md) documents all new
 criteria. Existing tests and benchmark commands remain required. No experimental
 validation or ANSYS correlation has been added.
+
+## Transient verification
+
+Run `uv run vibra-verify-transient` for independent continuous-time SDOF free/forced
+solutions, static/zero-state limits, energy conservation/dissipation, second-order
+time convergence and a continuous cantilever pulse benchmark. Original static,
+modal, harmonic and SDOF checks remain required. The [transient theory](transient-response.md)
+details tolerances and separates algebraic energy balance from time/space accuracy.
+Tests additionally cover force events, sampled-input interpolation against independent
+DOP853 integration, constraints, support inertial coupling, invalid inputs, bounded
+reports and Streamlit interactions. These are numerical checks, not experiments.

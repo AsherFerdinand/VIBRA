@@ -23,18 +23,30 @@ from vibra.visualization.plots import (
     sdof_response,
 )
 from vibra.workbench.harmonic import workspace as harmonic_workspace
+from vibra.workbench.transient import workspace as transient_workspace
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 st.set_page_config(page_title="VIBRA | Engineering Workbench", page_icon="◫", layout="wide")
 st.title("VIBRA")
-st.caption("STRUCTURAL DYNAMICS & FEM WORKBENCH · 0.2 · SI UNITS")
+st.caption("STRUCTURAL DYNAMICS & FEM WORKBENCH · 0.3 · SI UNITS")
 analysis = st.sidebar.selectbox(
-    "Analysis", ["Static cantilever", "Cantilever modes", "SDOF vibration", "Harmonic response"]
+    "Analysis",
+    [
+        "Static cantilever",
+        "Cantilever modes",
+        "SDOF vibration",
+        "Harmonic response",
+        "Transient response",
+    ],
 )
 st.sidebar.caption("Model → Mesh & supports → Solve → Inspect → Export")
 
 if analysis == "Harmonic response":
     harmonic_workspace()
+    st.stop()
+
+if analysis == "Transient response":
+    transient_workspace()
     st.stop()
 
 with st.sidebar.form("model_inputs"):

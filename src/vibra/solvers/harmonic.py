@@ -3,7 +3,7 @@
 import logging
 import warnings
 from dataclasses import dataclass
-from typing import Literal, Self
+from typing import Self
 
 import numpy as np
 from numpy.typing import NDArray
@@ -13,26 +13,14 @@ from scipy.linalg.lapack import zgecon
 from scipy.signal import find_peaks
 
 from vibra.core.assembly import assemble, constrained_system
+from vibra.core.dynamic_models import Damping as Damping
+from vibra.core.dynamic_models import ResponseDOF as ResponseDOF
 from vibra.core.element import Matrix
 from vibra.core.errors import InvalidModelError, SolverError
-from vibra.core.models import DOF, AnalysisConfig, EngineeringModel, FrameModel
+from vibra.core.models import AnalysisConfig, EngineeringModel, FrameModel
 
 ComplexMatrix = NDArray[np.complex128]
 logger = logging.getLogger(__name__)
-
-
-class Damping(EngineeringModel):
-    kind: Literal["undamped", "mass", "stiffness", "rayleigh"] = "undamped"
-    alpha: float = Field(default=0.0, ge=0, description="Mass coefficient [1/s]")
-    beta: float = Field(default=0.0, ge=0, description="Stiffness coefficient [s]")
-
-    @model_validator(mode="after")
-    def active_coefficients(self) -> Self:
-        if self.kind in ("undamped", "stiffness") and self.alpha != 0:
-            raise InvalidModelError(f"{self.kind} damping requires alpha = 0.")
-        if self.kind in ("undamped", "mass") and self.beta != 0:
-            raise InvalidModelError(f"{self.kind} damping requires beta = 0.")
-        return self
 
 
 class FrequencySweep(EngineeringModel):
@@ -48,15 +36,6 @@ class FrequencySweep(EngineeringModel):
 
     def frequencies(self) -> tuple[float, ...]:
         return tuple(float(f) for f in np.linspace(self.start_hz, self.stop_hz, self.points))
-
-
-class ResponseDOF(EngineeringModel):
-    node: int = Field(ge=0)
-    dof: DOF = DOF.UY
-
-    @property
-    def label(self) -> str:
-        return f"Node {self.node} {self.dof.name} [{'rad' if self.dof == DOF.RZ else 'm'}]"
 
 
 class HarmonicLoad(ResponseDOF):

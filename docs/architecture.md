@@ -15,6 +15,8 @@ flowchart LR
     Assembly --> Static[Static solve]
     Assembly --> Modal[Modal solve]
     Assembly --> Harmonic[Complex harmonic sweep]
+    Assembly --> Transient[Newmark transient solve]
+    Transient --> Output
     Harmonic --> Output
     SDOF[Separate SDOF model] --> Integrator[DOP853 integration]
     Static --> Output[JSON reports / Plotly]
@@ -32,17 +34,17 @@ flowchart LR
 | `src/vibra/core/mesh.py` | validated straight geometry, deterministic cantilever mesh |
 | `src/vibra/core/element.py` | local stiffness/mass and orientation transformation |
 | `src/vibra/core/assembly.py` | global dense matrices, DOF map, constraint elimination and stability |
-| `src/vibra/solvers/` | static, undamped modal and complex harmonic solvers with diagnostic checks |
+| `src/vibra/solvers/` | static, modal, harmonic and transient FEM solvers with diagnostic checks |
 | `src/vibra/dynamics/` | separate lumped SDOF equation and time integration |
 | `src/vibra/verification/` | independent analytical solutions and convergence reports |
 | `src/vibra/visualization/` | Plotly engineering figures, Hermite shape interpolation |
 | `src/vibra/io/` | versioned SI JSON reports, explicit verification scope |
-| `src/vibra/workbench/` | harmonic Streamlit workspace; no numerical module imports it |
+| `src/vibra/workbench/` | harmonic/transient Streamlit workspaces; no numerical module imports it |
 | `frontend/app.py` | parameter forms, submitted-result state, inspection and export |
 | `examples/` | executable beam and SDOF cases producing actual plots |
 | `tests/` | unit, analytical, integration and invalid-input checks |
 
-No placeholder transient/FFT modules or API service are created. Future
+No placeholder FFT modules or API service are created. Future
 features should enter the package only when they can be exercised and verified.
 
 ## Reproducibility and configuration
@@ -74,9 +76,11 @@ uv run mypy
 uv run pytest --junitxml=artifacts/pytest.xml
 uv run vibra-verify
 uv run vibra-verify-harmonic
+uv run vibra-verify-transient
 uv run python examples/steel_cantilever.py
 uv run python examples/sdof_resonance.py
 uv run python examples/harmonic_cantilever.py
+uv run python examples/transient_cantilever.py
 uv run python scripts/generate_portfolio.py
 uv build
 ```
@@ -100,3 +104,22 @@ encoder's real/imag complex-array representation.
 formulas. `verification/harmonic_benchmarks.py` writes CI-readable check outcomes.
 See [harmonic response](harmonic-response.md) for conditioning, phase masks and
 sampled-peak limitations. The dependency set is unchanged for this extension.
+
+## Transient extension (0.3)
+
+`core/dynamic_models.py` now owns shared damping and response-coordinate definitions.
+Harmonic imports re-export these unchanged names, preserving the 0.2 Python API.
+`dynamics/forcing.py` defines validated step, harmonic, rectangular/half-sine pulse
+and sampled histories, with explicit right/left limits.
+
+`solvers/transient.py` owns time-grid/initial-state inputs, average-acceleration
+Newmark integration, consistent initial acceleration, jump treatment, numerical
+guards and energy/reaction recovery. It reuses the same assembly and constraints.
+`visualization/transient.py` plots real histories, energy, deformation and bounded
+actual-frame animation; `workbench/transient.py` contains Streamlit controls only.
+`io/transient_report.py` bounds export sampling without modifying integration.
+
+`verification/transient_analytical.py` supplies continuous SDOF and continuous-beam
+references; `verification/transient_benchmarks.py` writes independent time/mesh/energy
+checks. The dependency set is unchanged. See [transient theory](transient-response.md)
+for energy quadrature, force events, initial conditions and output-size conventions.

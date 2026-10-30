@@ -121,3 +121,10 @@ The same global K and consistent M now support proportional viscous damping and
 direct complex harmonic response. See [harmonic formulation](harmonic-response.md)
 for phasor conventions, damping definitions, condition/residual guards and the
 independent continuous-beam benchmark. No static or modal formulation was replaced.
+
+## Transient extension
+
+Version 0.3 reuses the same K, consistent M, proportional damping and exact zero
+constraints for implicit Newmark average acceleration. The [transient formulation](transient-response.md)
+derives the time integration, finite force-jump treatment, energy/work balance and
+dynamic support reaction recovery. The static/modal/harmonic formulations remain intact.
