@@ -21,6 +21,12 @@ flowchart LR
     CSV[Validated CSV] --> Signals[Independent FFT / PSD / metrics]
     Adapter --> Signals
     Signals --> Output
+    Study[NVH study orchestration] --> Models
+    Study --> Static
+    Study --> Modal
+    Study --> Harmonic
+    Study --> Transient
+    Study --> Signals
     Harmonic --> Output
     SDOF[Separate SDOF model] --> Integrator[DOP853 integration]
     Static --> Output[JSON reports / Plotly]
@@ -87,6 +93,7 @@ uv run python examples/sdof_resonance.py
 uv run python examples/harmonic_cantilever.py
 uv run python examples/transient_cantilever.py
 uv run python examples/cantilever_signal_diagnostics.py
+uv run python examples/automotive_nvh_study.py
 uv run python scripts/generate_portfolio.py
 uv build
 ```
@@ -145,3 +152,23 @@ histories and separately computes modal references.
 `verification/signal_demo.py` defines an actual executable cantilever pulse case.
 No FEM solver equations or dependency declarations were changed for this release.
 See [signal theory](signal-diagnostics.md) for PSD/ENBW and endpoint conventions.
+
+## Engineering study orchestration (0.5)
+
+`studies/nvh.py` validates two equivalent support-rail designs and common load
+cases, constructs supported models, and calls the existing solvers. Typed results
+retain actual static/modal/harmonic/transient/signal outputs. Controlled studies
+and convergence reuse the same model builder, preserving physical station locations.
+Convergence fields are reduced immediately to common-grid histories and diagnostics
+to keep memory practical. No original numerical solver is modified.
+
+`io/nvh_report.py` combines existing bounded transient/signal report helpers with
+study data into JSON and Markdown. `visualization/nvh.py` renders results only;
+`workbench/nvh.py` provides the seventh workspace. `studies/cli.py` and
+`examples/automotive_nvh_study.py` regenerate reports and figures and fail if study
+checks fail. `scripts/generate_nvh_portfolio.py` creates compact tracked figures,
+a generated Markdown report and summary JSON; full JSON stays in artifacts/.
+
+The [case-study documentation](automotive-nvh-study.md) defines the force-controlled
+bare-rail boundary and separates it from motor/vehicle dynamics, strength or acoustic
+claims. No additional dependencies or cloud services are used.

@@ -7,13 +7,14 @@ complex phasor reports and an interactive harmonic workspace.
 Version 0.3 adds verified transient FEM, Newmark average acceleration, time histories,
 consistent energy accounting, dynamic reactions and transient visualization.
 Version 0.4 adds verified FFT/PSD, vibration metrics, validated CSV input and
-FEM-linked signal diagnostics. It does
+FEM-linked signal diagnostics. Version 0.5 adds a reproducible force-driven
+equivalent motor-interface support-rail investigation and design comparison. It does
 not attempt a general-purpose production CAE system.
 
 Next milestones, in order:
 
-1. **V5 — Automotive NVH studies:** documented illustrative models with clear
-   assumptions and reproducible inputs.
+1. **Installed-system foundations:** verified motor mass/inertia and mount
+   compliance, followed by measured-force/FRF comparisons and controlled mode tracking.
 2. **V6 — FEM scale and capabilities:** sparse assembly, distributed loads,
    nonzero supports, releases, shear-flexible elements and richer meshes.
 3. **V7 — Independent CAE references:** reproducible comparisons, potentially with

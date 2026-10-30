@@ -23,13 +23,14 @@ from vibra.visualization.plots import (
     sdof_response,
 )
 from vibra.workbench.harmonic import workspace as harmonic_workspace
+from vibra.workbench.nvh import workspace as nvh_workspace
 from vibra.workbench.signals import workspace as signal_workspace
 from vibra.workbench.transient import workspace as transient_workspace
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 st.set_page_config(page_title="VIBRA | Engineering Workbench", page_icon="◫", layout="wide")
 st.title("VIBRA")
-st.caption("STRUCTURAL DYNAMICS & FEM WORKBENCH · 0.4 · SI UNITS")
+st.caption("STRUCTURAL DYNAMICS & FEM WORKBENCH · 0.5 · SI UNITS")
 analysis = st.sidebar.selectbox(
     "Analysis",
     [
@@ -39,6 +40,7 @@ analysis = st.sidebar.selectbox(
         "Harmonic response",
         "Transient response",
         "Signal Diagnostics",
+        "Automotive NVH Study",
     ],
 )
 st.sidebar.caption("Model → Mesh & supports → Solve → Inspect → Export")
@@ -53,6 +55,10 @@ if analysis == "Transient response":
 
 if analysis == "Signal Diagnostics":
     signal_workspace()
+    st.stop()
+
+if analysis == "Automotive NVH Study":
+    nvh_workspace()
     st.stop()
 
 with st.sidebar.form("model_inputs"):

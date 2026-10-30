@@ -189,3 +189,31 @@ def test_signal_workspace_csv_and_invalid_sampling() -> None:
     assert not app.exception
     assert app.error
     assert "signal_solved" not in app.session_state
+
+
+def test_automotive_nvh_workspace_runs_real_study_and_exports() -> None:
+    app = AppTest.from_file(str(APP), default_timeout=60).run()
+    app.sidebar.selectbox[0].select("Automotive NVH Study").run()
+    next(widget for widget in app.button if widget.label == "Run engineering study").click().run()
+    assert not app.exception
+    assert not app.error
+    study = app.session_state["nvh_study"]
+    assert all(study.verification_checks.values())
+    assert (
+        study.modified.summary.operating_amplitude_m > study.baseline.summary.operating_amplitude_m
+    )
+    next(widget for widget in app.selectbox if widget.label == "Mode design").select(
+        "Modified B"
+    ).run()
+    assert not app.exception
+    assert (
+        app.session_state["nvh_study"].modified.summary.first_natural_hz
+        == study.modified.summary.first_natural_hz
+    )
+    next(widget for widget in app.number_input if widget.label == "Base time step [s]").set_value(
+        0.0003
+    )
+    next(widget for widget in app.button if widget.label == "Run engineering study").click().run()
+    assert not app.exception
+    assert app.error
+    assert "nvh_study" not in app.session_state

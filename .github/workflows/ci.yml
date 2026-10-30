@@ -25,6 +25,7 @@ jobs:
       - run: uv run python examples/harmonic_cantilever.py
       - run: uv run python examples/transient_cantilever.py
       - run: uv run python examples/cantilever_signal_diagnostics.py
+      - run: uv run python examples/automotive_nvh_study.py
       - run: uv build
       - uses: actions/upload-artifact@v4
         if: always()

@@ -1,0 +1,284 @@
+{
+  "config": {
+    "baseline": {
+      "name": "Baseline A",
+      "length": 0.45,
+      "width": 0.025,
+      "height": 0.012,
+      "young_modulus": 210000000000.0,
+      "density": 7850.0
+    },
+    "modified": {
+      "name": "Deeper section B",
+      "length": 0.45,
+      "width": 0.025,
+      "height": 0.015,
+      "young_modulus": 210000000000.0,
+      "density": 7850.0
+    },
+    "elements": 8,
+    "static_force_N": -200.0,
+    "harmonic_force_N": 2.0,
+    "excitation_fraction": 1.0,
+    "monitor_fraction": 1.0,
+    "excitation_order": 2.0,
+    "operating_rpm": 1800.0,
+    "sweep": {
+      "start_hz": 0.0,
+      "stop_hz": 160.0,
+      "points": 401
+    },
+    "damping": {
+      "kind": "rayleigh",
+      "alpha": 4.0,
+      "beta": 8e-05
+    },
+    "pulse_force_N": -20.0,
+    "pulse_width_s": 0.01,
+    "grid": {
+      "duration": 0.4,
+      "time_step": 0.0001
+    }
+  },
+  "assumptions": [
+    "Equivalent straight cantilever support rail, not a solid/shell or production bracket",
+    "Fixed root approximates a rigid attachment; no bolts, contact or mount/base compliance",
+    "Linear elastic in-plane Euler\u2013Bernoulli frame; no shear deformation or rotary section inertia",
+    "Bare rail mass only; motor inertia/rigid-body coupling and vehicle structure omitted",
+    "All interface forces are illustrative assumptions, not measured motor loads",
+    "Dynamics perturb static equilibrium; linear superposition without stress stiffening",
+    "Same Rayleigh coefficients across designs; modal damping ratios may change with frequency",
+    "Harmonic force amplitude is peak, constant over frequency; order frequency = order*rpm/60",
+    "Pulse and harmonic analyses are separate load cases, not a single operating event",
+    "Finite-record PSD peaks are reference comparisons, not experimental modal identification",
+    "No strength/fatigue, acoustic, experimental, ANSYS or vehicle-performance claims"
+  ],
+  "baseline": {
+    "mass_kg": 1.05975,
+    "maximum_static_translation_m": 0.008035714285713954,
+    "support_reactions_N_Nm": [
+      0.0,
+      200.00000000004002,
+      90.0000000000012
+    ],
+    "maximum_end_moment_Nm": 90.0000000000012,
+    "maximum_axial_end_force_N": 0.0,
+    "equilibrium_residual_N_Nm": [
+      0.0,
+      4.001776687800884e-11,
+      1.1937117960769683e-12
+    ],
+    "first_natural_hz": 49.512197622066964,
+    "operating_amplitude_m": 0.00016328850672784752,
+    "operating_phase_degrees": -174.31426985364558,
+    "sampled_harmonic_peak_m": 0.0020536814449047375,
+    "sampled_peak_hz": 49.6,
+    "transient_peak_displacement_m": 0.0011842251328959465,
+    "transient_peak_velocity_m_per_s": 0.35435253352659096,
+    "transient_peak_acceleration_m_per_s2": 113.32027624742676,
+    "displacement_signal_rms_m": 0.0003722810390841256,
+    "acceleration_signal_rms_m_per_s2": 36.0159979834187,
+    "dominant_displacement_hz": 49.98684556695606,
+    "dominant_acceleration_hz": 49.98684556695606,
+    "final_to_pulse_end_energy_ratio": 0.01015419166668832,
+    "relative_energy_balance_error": 5.391398423572693e-13,
+    "maximum_dynamic_support_force_N": 49.50346734235857,
+    "static_tip_relative_analytical_error": 4.118927421359331e-14,
+    "first_frequency_relative_analytical_error": 2.0830565319318595e-06
+  },
+  "modified": {
+    "mass_kg": 1.3246875,
+    "maximum_static_translation_m": 0.004114285714289235,
+    "support_reactions_N_Nm": [
+      0.0,
+      200.00000000025284,
+      90.00000000008876
+    ],
+    "maximum_end_moment_Nm": 90.00000000008875,
+    "maximum_axial_end_force_N": 0.0,
+    "equilibrium_residual_N_Nm": [
+      0.0,
+      2.5283952709287405e-10,
+      8.876099855115172e-11
+    ],
+    "first_natural_hz": 61.8902470282984,
+    "operating_amplitude_m": 0.0005533512109816637,
+    "operating_phase_degrees": -33.64291740219432,
+    "sampled_harmonic_peak_m": 0.0009594813417767408,
+    "sampled_peak_hz": 62.0,
+    "transient_peak_displacement_m": 0.0006641053456780342,
+    "transient_peak_velocity_m_per_s": 0.24843933366529303,
+    "transient_peak_acceleration_m_per_s2": 91.83110511947663,
+    "displacement_signal_rms_m": 0.00017020589581623875,
+    "acceleration_signal_rms_m_per_s2": 25.75086866635404,
+    "dominant_displacement_hz": 63.141278610891874,
+    "dominant_acceleration_hz": 63.141278610891874,
+    "final_to_pulse_end_energy_ratio": 0.0018827213308965662,
+    "relative_energy_balance_error": 5.163431764119078e-13,
+    "maximum_dynamic_support_force_N": 48.6849122354966,
+    "static_tip_relative_analytical_error": 8.555378627761456e-13,
+    "first_frequency_relative_analytical_error": 2.083068079805628e-06
+  },
+  "convergence": [
+    {
+      "design_name": "Baseline A",
+      "time": [
+        {
+          "elements": 8,
+          "time_step_s": 0.0001,
+          "peak_monitored_displacement_m": 0.0011842251328959465,
+          "peak_monitored_acceleration_m_per_s2": 113.32027624742676,
+          "relative_velocity_difference_from_finest": 0.001575428872559963,
+          "relative_acceleration_difference_from_finest": 0.010079865986622819,
+          "relative_difference_from_finest": 0.001516092797549374,
+          "relative_energy_balance_error": 5.391398423572693e-13,
+          "maximum_backward_error": 1.299742733858179e-16
+        },
+        {
+          "elements": 8,
+          "time_step_s": 5e-05,
+          "peak_monitored_displacement_m": 0.001184467949309239,
+          "peak_monitored_acceleration_m_per_s2": 113.22584835382341,
+          "relative_velocity_difference_from_finest": 0.0003151169731364768,
+          "relative_acceleration_difference_from_finest": 0.0012011383068763792,
+          "relative_difference_from_finest": 0.00030324876051752325,
+          "relative_energy_balance_error": 4.129490955219698e-13,
+          "maximum_backward_error": 1.3783297394668558e-16
+        },
+        {
+          "elements": 8,
+          "time_step_s": 2.5e-05,
+          "peak_monitored_displacement_m": 0.0011845056570502072,
+          "peak_monitored_acceleration_m_per_s2": 113.20302939664191,
+          "relative_velocity_difference_from_finest": 0.0,
+          "relative_acceleration_difference_from_finest": 0.0,
+          "relative_difference_from_finest": 0.0,
+          "relative_energy_balance_error": 4.075120443788362e-13,
+          "maximum_backward_error": 1.3552062568143126e-16
+        }
+      ],
+      "mesh": [
+        {
+          "elements": 4,
+          "time_step_s": 2.5e-05,
+          "peak_monitored_displacement_m": 0.0011845824650087696,
+          "peak_monitored_acceleration_m_per_s2": 113.17210166417775,
+          "relative_velocity_difference_from_finest": 0.0006796657576584766,
+          "relative_acceleration_difference_from_finest": 0.0015414864164289453,
+          "relative_difference_from_finest": 0.000653579984955479,
+          "relative_energy_balance_error": 4.7346261455309177e-14,
+          "maximum_backward_error": 1.601630698859894e-16
+        },
+        {
+          "elements": 8,
+          "time_step_s": 2.5e-05,
+          "peak_monitored_displacement_m": 0.0011845056570502072,
+          "peak_monitored_acceleration_m_per_s2": 113.20302939664191,
+          "relative_velocity_difference_from_finest": 4.0728254684392025e-05,
+          "relative_acceleration_difference_from_finest": 0.00012674956797852576,
+          "relative_difference_from_finest": 3.916541708545429e-05,
+          "relative_energy_balance_error": 4.075120443788362e-13,
+          "maximum_backward_error": 1.3552062568143126e-16
+        },
+        {
+          "elements": 16,
+          "time_step_s": 2.5e-05,
+          "peak_monitored_displacement_m": 0.0011845008499066375,
+          "peak_monitored_acceleration_m_per_s2": 113.20881476843742,
+          "relative_velocity_difference_from_finest": 0.0,
+          "relative_acceleration_difference_from_finest": 0.0,
+          "relative_difference_from_finest": 0.0,
+          "relative_energy_balance_error": 5.080879772178723e-12,
+          "maximum_backward_error": 1.4844475385810603e-16
+        }
+      ]
+    },
+    {
+      "design_name": "Deeper section B",
+      "time": [
+        {
+          "elements": 8,
+          "time_step_s": 0.0001,
+          "peak_monitored_displacement_m": 0.0006641053456780342,
+          "peak_monitored_acceleration_m_per_s2": 91.83110511947663,
+          "relative_velocity_difference_from_finest": 0.0022259409066769263,
+          "relative_acceleration_difference_from_finest": 0.00896845685244134,
+          "relative_difference_from_finest": 0.0021404081513901156,
+          "relative_energy_balance_error": 5.163431764119078e-13,
+          "maximum_backward_error": 1.711579530927529e-16
+        },
+        {
+          "elements": 8,
+          "time_step_s": 5e-05,
+          "peak_monitored_displacement_m": 0.0006642216944140868,
+          "peak_monitored_acceleration_m_per_s2": 91.76053167676783,
+          "relative_velocity_difference_from_finest": 0.0004452325150513025,
+          "relative_acceleration_difference_from_finest": 0.0011969271006396123,
+          "relative_difference_from_finest": 0.00042813230912343774,
+          "relative_energy_balance_error": 6.559718614431965e-13,
+          "maximum_backward_error": 1.5673520936866437e-16
+        },
+        {
+          "elements": 8,
+          "time_step_s": 2.5e-05,
+          "peak_monitored_displacement_m": 0.0006642669204043635,
+          "peak_monitored_acceleration_m_per_s2": 91.74376746036826,
+          "relative_velocity_difference_from_finest": 0.0,
+          "relative_acceleration_difference_from_finest": 0.0,
+          "relative_difference_from_finest": 0.0,
+          "relative_energy_balance_error": 6.52686068400066e-13,
+          "maximum_backward_error": 1.6486722164781174e-16
+        }
+      ],
+      "mesh": [
+        {
+          "elements": 4,
+          "time_step_s": 2.5e-05,
+          "peak_monitored_displacement_m": 0.0006643074292432907,
+          "peak_monitored_acceleration_m_per_s2": 91.73172971677015,
+          "relative_velocity_difference_from_finest": 0.0006144081644935338,
+          "relative_acceleration_difference_from_finest": 0.0008933579700931753,
+          "relative_difference_from_finest": 0.0005904091856841918,
+          "relative_energy_balance_error": 3.363792895792697e-14,
+          "maximum_backward_error": 1.566427930673358e-16
+        },
+        {
+          "elements": 8,
+          "time_step_s": 2.5e-05,
+          "peak_monitored_displacement_m": 0.0006642669204043635,
+          "peak_monitored_acceleration_m_per_s2": 91.74376746036826,
+          "relative_velocity_difference_from_finest": 3.681750952333893e-05,
+          "relative_acceleration_difference_from_finest": 8.754373331814823e-05,
+          "relative_difference_from_finest": 3.538030511756156e-05,
+          "relative_energy_balance_error": 6.52686068400066e-13,
+          "maximum_backward_error": 1.6486722164781174e-16
+        },
+        {
+          "elements": 16,
+          "time_step_s": 2.5e-05,
+          "peak_monitored_displacement_m": 0.000664264327306825,
+          "peak_monitored_acceleration_m_per_s2": 91.74900410399073,
+          "relative_velocity_difference_from_finest": 0.0,
+          "relative_acceleration_difference_from_finest": 0.0,
+          "relative_difference_from_finest": 0.0,
+          "relative_energy_balance_error": 5.328733277939089e-12,
+          "maximum_backward_error": 1.2777345528935467e-16
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "static_force_moment_equilibrium": true,
+    "static_analytical_cantilever": true,
+    "first_modal_analytical_cantilever": true,
+    "controlled_frequency_scaling": true,
+    "controlled_static_scaling": true,
+    "transient_energy_balance": true,
+    "base_step_monitored_displacement_difference_below_one_percent": true,
+    "selected_mesh_monitored_displacement_difference_below_one_percent": true,
+    "base_step_acceleration_difference_below_five_percent": true,
+    "selected_mesh_acceleration_difference_below_one_percent": true
+  },
+  "experimental_validation": false,
+  "ansys_correlation": false
+}

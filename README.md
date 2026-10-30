@@ -26,6 +26,9 @@ assumptions and limits.
 - **Verified signal diagnostics**: one-sided FFT peak/RMS amplitudes, power/PSD,
   periodic windows with coherent-gain/ENBW scaling, time metrics, band RMS,
   validated SI CSV import and full-sample transient FEM integration.
+- **Automotive NVH engineering study**: a reproducible bare support-rail comparison
+  orchestrating static/modal/harmonic/transient/spectral solvers, controlled parameter
+  and station studies, convergence checks, JSON/Markdown reports and actual figures.
 - Separate mass-spring-damper SDOF model: free/harmonic forcing, initial displacement
   and velocity, under/critical/overdamping, time responses and mechanical energy.
 - Streamlit + Plotly workbench for static cantilevers, cantilever modes, harmonic
@@ -42,7 +45,7 @@ Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/). The lockfile and CI 
 Python 3.12. No MATLAB, ANSYS, Docker, database or credentials are needed.
 
 ```bash
-git clone https://github.com/AsherFerdinand/VIBRA.git
+git clone --branch feat/automotive-nvh-case-study --single-branch https://github.com/AsherFerdinand/VIBRA.git
 cd VIBRA
 uv sync --frozen
 uv run streamlit run frontend/app.py --server.address 0.0.0.0 --server.port 8501
@@ -88,7 +91,7 @@ E = 210 GPa, ρ = 7850 kg/m³ and a −100 N tip force. The 16-element solver gi
 At 32 elements, all first three bending frequency errors are below **0.0003%**.
 The verification suite also checks matrix symmetry/definiteness, rigid-body modes,
 energy, orientation invariance, invalid models, SDOF analytical responses and all
-six interface workflows. Full tolerances and results are in
+seven interface workflows. Full tolerances and results are in
 [verification](docs/verification.md) and the
 [machine-readable report](docs/results/verification.json).
 These are numerical verification and analytical benchmarks, **not experimental
@@ -165,6 +168,33 @@ criteria. See [signal theory](docs/signal-diagnostics.md), the
 [verification report](docs/results/signal-verification.json) and
 [demo metadata](docs/results/signal-demo.json).
 
+## Automotive NVH Study
+
+Version **0.5.0** adds **Automotive NVH Study**, a complete baseline/modified
+investigation using an equivalent EV motor-interface support rail. This is a bare,
+force-driven slender-beam model, not a validated production bracket or installed
+motor assembly. Motor inertia, joint/chassis compliance, strength/fatigue and
+acoustics are outside the model boundary.
+
+![Actual automotive support-rail comparison](docs/results/nvh-comparison.svg)
+
+Increasing section depth from 12 to 15 mm adds **25% mass**, reduces static tip
+deflection from **8.036 to 4.114 mm**, and raises the first natural frequency from
+**49.512 to 61.890 Hz**. At the illustrative 2 N, 60 Hz operating order, response
+instead increases from **0.1633 to 0.5534 mm** as resonance moves nearer that
+frequency. The modified rail is not universally superior.
+
+The workspace compares geometry, modal families/shapes, harmonic amplitude/phase,
+pulse displacement/velocity/acceleration, energy/reactions and FFT/PSD. It also
+runs controlled L/b/h/E/rho changes, damping/station/E-only harmonic studies, and
+mesh/time convergence for both designs. Reports distinguish sampled peaks and
+computed fine references from exact or experimental truth.
+
+Run `uv run vibra-nvh-study` or `uv run python examples/automotive_nvh_study.py`
+for full JSON/Markdown/HTML outputs under `artifacts/automotive-nvh-study/`.
+See the [engineering case study](docs/automotive-nvh-study.md),
+[generated report](docs/results/nvh-study.md) and [JSON summary](docs/results/nvh-summary.json).
+
 ## Reproduce results and quality checks
 
 ```bash
@@ -181,10 +211,12 @@ uv run python examples/sdof_resonance.py
 uv run python examples/harmonic_cantilever.py
 uv run python examples/transient_cantilever.py
 uv run python examples/cantilever_signal_diagnostics.py
+uv run python examples/automotive_nvh_study.py
 uv run python scripts/generate_portfolio.py
 uv run python scripts/generate_harmonic_portfolio.py
 uv run python scripts/generate_transient_portfolio.py
 uv run python scripts/generate_signal_portfolio.py
+uv run python scripts/generate_nvh_portfolio.py
 uv build
 ```
 
@@ -218,9 +250,10 @@ Slenderness, displacement size and high-mode validity remain engineering judgmen
 residual is not proof of physical model suitability. The UI warns for L/h < 10
 and displacement exceeding 5% of length (harmonic checks use a complex translation norm).
 
-Next: **automotive NVH case studies**, with verified Welch/cross-spectral methods
-as useful extensions. Harmonic response (0.2), transient FEM (0.3) and signal
-diagnostics (0.4) are implemented.
+Next: verified **motor inertia and mount compliance** for installed-system studies,
+with measured-force/FRF work and mode tracking as subsequent steps. Harmonic (0.2),
+transient FEM (0.3), signal diagnostics (0.4) and the support-rail NVH study (0.5)
+are implemented.
 FastAPI and React remain future options; the numerical core is already independent of the workbench interface.
 
 VIBRA is independently developed and is not affiliated with ANSYS.

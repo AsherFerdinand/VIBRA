@@ -21,7 +21,7 @@ figures and that report with `uv run python scripts/generate_portfolio.py`.
   undamped, critically damped, overdamped and harmonically forced SDOF solutions.
 - Physical invariants: undamped free-response energy conservation and damped
   free-response energy decay. Forced-response energy need not decay.
-- Integration: Streamlit's AppTest submits all six workflows and switches a
+- Integration: Streamlit's AppTest submits all seven workflows and switches a
   displayed mode while preserving the submitted engineering model.
 - **Experimental validation: none.** No ANSYS comparisons have been performed.
 
@@ -109,3 +109,17 @@ window-weighted power from raw RMS². Tests additionally cover odd-N endpoints,
 detrending, bands, CSV/sampling rejection, cumulative clock drift, FEM provenance
 and both workspace source paths. These are numerical checks, not experimental
 validation or measured modal identification.
+
+## Automotive study verification
+
+The original solver suites remain required. `uv run vibra-nvh-study` executes the
+full default study and returns nonzero on failed study checks. It verifies global
+force/moment balance, analytical cantilever compliance/f1, controlled one-factor
+scaling, energy accounting and computed mesh/time differences. Tests additionally
+cover reproducibility, mass consistency, solver orchestration, force/observation
+reciprocity, report integrity, invalid inputs and the workbench.
+
+[Study methodology and tolerances](automotive-nvh-study.md) distinguish numerical
+acceptance targets from automotive performance criteria. Fine-reference zero is
+not exact truth; the study does not validate motor inertia, mounts, component
+strength/fatigue, acoustic noise, experimental modal parameters or vehicle NVH.
