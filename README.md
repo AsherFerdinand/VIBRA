@@ -23,10 +23,13 @@ assumptions and limits.
 - **Verified transient FEM dynamics**: implicit Newmark average acceleration,
   step/harmonic/pulse/sampled forcing, initial states, multiple response DOFs,
   dynamic reactions and complete mechanical-energy/work/dissipation accounting.
+- **Verified signal diagnostics**: one-sided FFT peak/RMS amplitudes, power/PSD,
+  periodic windows with coherent-gain/ENBW scaling, time metrics, band RMS,
+  validated SI CSV import and full-sample transient FEM integration.
 - Separate mass-spring-damper SDOF model: free/harmonic forcing, initial displacement
   and velocity, under/critical/overdamping, time responses and mechanical energy.
 - Streamlit + Plotly workbench for static cantilevers, cantilever modes, harmonic
-  FEM, transient FEM and SDOF;
+  FEM, transient FEM, Signal Diagnostics and SDOF;
   parameter forms, mode selection, explicit display magnification and JSON reports.
 - Automated numerical verification and reproducible examples, including generated
   reports and standalone interactive HTML figures.
@@ -85,7 +88,7 @@ E = 210 GPa, ρ = 7850 kg/m³ and a −100 N tip force. The 16-element solver gi
 At 32 elements, all first three bending frequency errors are below **0.0003%**.
 The verification suite also checks matrix symmetry/definiteness, rigid-body modes,
 energy, orientation invariance, invalid models, SDOF analytical responses and all
-five interface workflows. Full tolerances and results are in
+six interface workflows. Full tolerances and results are in
 [verification](docs/verification.md) and the
 [machine-readable report](docs/results/verification.json).
 These are numerical verification and analytical benchmarks, **not experimental
@@ -138,6 +141,30 @@ second-order time convergence and FEM spatial convergence. See the
 [transient formulation, conventions and tolerances](docs/transient-response.md)
 and [machine-readable report](docs/results/transient-verification.json).
 
+## Signal Diagnostics workspace
+
+Version **0.4.0** adds **Signal Diagnostics**. Select a full-sample transient FEM
+channel (displacement, velocity or acceleration), or import a validated SI CSV.
+Choose detrending and a rectangular/Hann/Hamming window; inspect time metrics,
+peak-equivalent amplitude, PSD, band RMS, sampling metadata and modal references.
+Export complete inputs, FFT configuration, results and provenance in bounded JSON.
+
+FFT normalization handles DC and even/odd Nyquist behavior explicitly. PSD integration
+recovers window-weighted mean square; rectangular PSD recovers unwindowed RMS².
+Window coherent gain does not remove off-bin leakage/scalloping. Peaks are sampled
+spectral estimates, and a nearby FEM natural frequency does not establish modal identity.
+
+![Actual FEM signal diagnostics](docs/results/signal-diagnostics.svg)
+
+The cantilever example computes a real 3 s pulse response, then analyzes post-pulse
+tip displacement and acceleration at 2 kHz. Their dominant bin is **16.54887 Hz**,
+compared with a separately computed first FEM natural frequency of **16.71033 Hz**;
+Δf is **0.3447681 Hz**. Coherent-tone amplitude and PSD benchmark errors are below
+10⁻¹¹, while off-bin estimates and noise have explicit approximate/statistical
+criteria. See [signal theory](docs/signal-diagnostics.md), the
+[verification report](docs/results/signal-verification.json) and
+[demo metadata](docs/results/signal-demo.json).
+
 ## Reproduce results and quality checks
 
 ```bash
@@ -148,13 +175,16 @@ uv run mypy
 uv run vibra-verify
 uv run vibra-verify-harmonic
 uv run vibra-verify-transient
+uv run vibra-verify-signals
 uv run python examples/steel_cantilever.py
 uv run python examples/sdof_resonance.py
 uv run python examples/harmonic_cantilever.py
 uv run python examples/transient_cantilever.py
+uv run python examples/cantilever_signal_diagnostics.py
 uv run python scripts/generate_portfolio.py
 uv run python scripts/generate_harmonic_portfolio.py
 uv run python scripts/generate_transient_portfolio.py
+uv run python scripts/generate_signal_portfolio.py
 uv build
 ```
 
@@ -164,7 +194,9 @@ results and self-contained interactive HTML plots. `vibra-verify` writes
 `artifacts/verification.json` and fails if benchmark targets fail. The portfolio
 script regenerates the actual SVG/PNG figures and reference report in `docs/results/`.
 CI runs lint, formatting, strict type checks, tests, benchmarks, examples and package
-builds. Dependency versions and artifact hashes are recorded in `uv.lock`.
+builds. Signal import requires uniform sampling, explicit SI units and no missing
+data; it never silently resamples. CSV is limited to 10 MiB/131072 samples and
+signal JSON exports to 25 MB. Dependency versions and artifact hashes are recorded in `uv.lock`.
 
 ## Architecture and limitations
 
@@ -177,8 +209,7 @@ This release supports connected small planar models, linear materials, rigid
 joints, nodal forces/moments and zero displacement constraints. Dense matrices
 are suitable for educational meshes. It does not include shear deformation,
 cross-sectional rotary inertia, distributed loads, internal hinges, nonzero
-prescribed displacement, geometric nonlinearity, stress recovery, 3D FEM, contact,
-FFT diagnostics. Harmonic FEM supports proportional
+prescribed displacement, geometric nonlinearity, stress recovery, 3D FEM or contact. Harmonic FEM supports proportional
 viscous damping, constant load phasors and zero supports; frequency-dependent load
 spectra, nonproportional damping and base excitation are not included. Transient
 FEM uses uniform steps, proportional damping, aligned force jumps and fixed supports;
@@ -187,8 +218,9 @@ Slenderness, displacement size and high-mode validity remain engineering judgmen
 residual is not proof of physical model suitability. The UI warns for L/h < 10
 and displacement exceeding 5% of length (harmonic checks use a complex translation norm).
 
-Next: verified **FFT and vibration signal diagnostics**. Harmonic response was
-implemented in version 0.2; transient FEM dynamics is implemented in version 0.3.
+Next: **automotive NVH case studies**, with verified Welch/cross-spectral methods
+as useful extensions. Harmonic response (0.2), transient FEM (0.3) and signal
+diagnostics (0.4) are implemented.
 FastAPI and React remain future options; the numerical core is already independent of the workbench interface.
 
 VIBRA is independently developed and is not affiliated with ANSYS.

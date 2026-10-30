@@ -1,0 +1,78 @@
+[
+  {
+    "quantity": "displacement",
+    "unit": "m",
+    "sampling": {
+      "samples": 5801,
+      "sample_interval_s": 0.0005,
+      "sampling_frequency_hz": 2000.0,
+      "sample_span_s": 2.9,
+      "dft_duration_s": 2.9005,
+      "nyquist_hz": 1000.0,
+      "frequency_resolution_hz": 0.34476814342354767,
+      "uniformity_relative_tolerance": 1e-06
+    },
+    "dominant_frequency_hz": 16.548870884330288,
+    "independent_natural_references_hz": [
+      16.710334065652162,
+      104.72239727679798,
+      293.23590374863096,
+      574.6893601638176,
+      950.2468138677162,
+      1293.5678827597112,
+      1420.1991181725748,
+      1985.2182124698775,
+      2646.3986601186753,
+      3405.376691093871,
+      3893.1810194880663,
+      4264.415577456107
+    ],
+    "damping": {
+      "kind": "rayleigh",
+      "alpha": 2.0,
+      "beta": 2e-05
+    },
+    "transient_energy_error": 4.607541003872302e-12,
+    "window": "hann",
+    "detrend": "mean",
+    "modal_identification_claimed": false
+  },
+  {
+    "quantity": "acceleration",
+    "unit": "m/s^2",
+    "sampling": {
+      "samples": 5801,
+      "sample_interval_s": 0.0005,
+      "sampling_frequency_hz": 2000.0,
+      "sample_span_s": 2.9,
+      "dft_duration_s": 2.9005,
+      "nyquist_hz": 1000.0,
+      "frequency_resolution_hz": 0.34476814342354767,
+      "uniformity_relative_tolerance": 1e-06
+    },
+    "dominant_frequency_hz": 16.548870884330288,
+    "independent_natural_references_hz": [
+      16.710334065652162,
+      104.72239727679798,
+      293.23590374863096,
+      574.6893601638176,
+      950.2468138677162,
+      1293.5678827597112,
+      1420.1991181725748,
+      1985.2182124698775,
+      2646.3986601186753,
+      3405.376691093871,
+      3893.1810194880663,
+      4264.415577456107
+    ],
+    "damping": {
+      "kind": "rayleigh",
+      "alpha": 2.0,
+      "beta": 2e-05
+    },
+    "transient_energy_error": 4.607541003872302e-12,
+    "window": "hann",
+    "detrend": "mean",
+    "modal_identification_claimed": false
+  }
+]

@@ -21,7 +21,7 @@ figures and that report with `uv run python scripts/generate_portfolio.py`.
   undamped, critically damped, overdamped and harmonically forced SDOF solutions.
 - Physical invariants: undamped free-response energy conservation and damped
   free-response energy decay. Forced-response energy need not decay.
-- Integration: Streamlit's AppTest submits all five workflows and switches a
+- Integration: Streamlit's AppTest submits all six workflows and switches a
   displayed mode while preserving the submitted engineering model.
 - **Experimental validation: none.** No ANSYS comparisons have been performed.
 
@@ -98,3 +98,14 @@ details tolerances and separates algebraic energy balance from time/space accura
 Tests additionally cover force events, sampled-input interpolation against independent
 DOP853 integration, constraints, support inertial coupling, invalid inputs, bounded
 reports and Streamlit interactions. These are numerical checks, not experiments.
+
+## Signal verification
+
+Run `uv run vibra-verify-signals` for coherent peak/RMS normalization, analytical
+window gains/ENBW, PSD integration, Parseval, mixed/DC/Nyquist signals, half-bin
+leakage/scalloping and fixed-seed noisy diagnostics. Original FEM suites remain
+required. [Signal theory](signal-diagnostics.md) gives tolerances and distinguishes
+window-weighted power from raw RMS². Tests additionally cover odd-N endpoints,
+detrending, bands, CSV/sampling rejection, cumulative clock drift, FEM provenance
+and both workspace source paths. These are numerical checks, not experimental
+validation or measured modal identification.

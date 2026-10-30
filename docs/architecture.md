@@ -17,6 +17,10 @@ flowchart LR
     Assembly --> Harmonic[Complex harmonic sweep]
     Assembly --> Transient[Newmark transient solve]
     Transient --> Output
+    Transient --> Adapter[FEM signal adapter]
+    CSV[Validated CSV] --> Signals[Independent FFT / PSD / metrics]
+    Adapter --> Signals
+    Signals --> Output
     Harmonic --> Output
     SDOF[Separate SDOF model] --> Integrator[DOP853 integration]
     Static --> Output[JSON reports / Plotly]
@@ -44,7 +48,7 @@ flowchart LR
 | `examples/` | executable beam and SDOF cases producing actual plots |
 | `tests/` | unit, analytical, integration and invalid-input checks |
 
-No placeholder FFT modules or API service are created. Future
+No placeholder API service or unimplemented numerical modules are created. Future
 features should enter the package only when they can be exercised and verified.
 
 ## Reproducibility and configuration
@@ -77,10 +81,12 @@ uv run pytest --junitxml=artifacts/pytest.xml
 uv run vibra-verify
 uv run vibra-verify-harmonic
 uv run vibra-verify-transient
+uv run vibra-verify-signals
 uv run python examples/steel_cantilever.py
 uv run python examples/sdof_resonance.py
 uv run python examples/harmonic_cantilever.py
 uv run python examples/transient_cantilever.py
+uv run python examples/cantilever_signal_diagnostics.py
 uv run python scripts/generate_portfolio.py
 uv build
 ```
@@ -123,3 +129,19 @@ actual-frame animation; `workbench/transient.py` contains Streamlit controls onl
 references; `verification/transient_benchmarks.py` writes independent time/mesh/energy
 checks. The dependency set is unchanged. See [transient theory](transient-response.md)
 for energy quadrature, force events, initial conditions and output-size conventions.
+
+## Independent signal diagnostics (0.4)
+
+`signals/models.py` defines validated SI records, sampling and FFT options.
+`signals/analysis.py` uses NumPy/SciPy to compute periodic-window FFT amplitude,
+RMS/power, modified periodogram PSD, metrics and sampled peaks. It neither calls
+FEM solvers nor requires FEM data. `signals/fem.py` alone adapts full transient
+histories and separately computes modal references.
+
+`io/signal_csv.py` performs bounded column-selected CSV import without resampling;
+`io/signal_report.py` exports complete bounded provenance and spectral results.
+`visualization/signals.py` and `workbench/signals.py` provide the sixth workspace.
+`verification/signal_benchmarks.py` owns independent analytical/statistical checks;
+`verification/signal_demo.py` defines an actual executable cantilever pulse case.
+No FEM solver equations or dependency declarations were changed for this release.
+See [signal theory](signal-diagnostics.md) for PSD/ENBW and endpoint conventions.

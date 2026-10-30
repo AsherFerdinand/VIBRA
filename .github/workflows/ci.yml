@@ -19,10 +19,12 @@ jobs:
       - run: uv run vibra-verify
       - run: uv run vibra-verify-harmonic
       - run: uv run vibra-verify-transient
+      - run: uv run vibra-verify-signals
       - run: uv run python examples/steel_cantilever.py
       - run: uv run python examples/sdof_resonance.py
       - run: uv run python examples/harmonic_cantilever.py
       - run: uv run python examples/transient_cantilever.py
+      - run: uv run python examples/cantilever_signal_diagnostics.py
       - run: uv build
       - uses: actions/upload-artifact@v4
         if: always()

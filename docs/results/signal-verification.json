@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0",
+  "kind": "Analytical signal-processing numerical verification",
+  "experimental_validation": false,
+  "ansys_correlation": false,
+  "inputs": {
+    "samples": 4096,
+    "fs_hz": 4096.0,
+    "coherent_tone_hz": 100,
+    "peak_amplitude": 2.5,
+    "noise_seed": 2404
+  },
+  "coherent_window_results": [
+    {
+      "window": "rectangular",
+      "peak_amplitude_error": 0.0,
+      "rms_error": 2.220446049250313e-16,
+      "coherent_gain_error": 0.0,
+      "enbw_bins_error": 0.0,
+      "integrated_psd_error": 0.0
+    },
+    {
+      "window": "hann",
+      "peak_amplitude_error": 0.0,
+      "rms_error": 2.220446049250313e-16,
+      "coherent_gain_error": 0.0,
+      "enbw_bins_error": 0.0,
+      "integrated_psd_error": 4.440892098500626e-16
+    },
+    {
+      "window": "hamming",
+      "peak_amplitude_error": 0.0,
+      "rms_error": 2.220446049250313e-16,
+      "coherent_gain_error": 0.0,
+      "enbw_bins_error": 0.0,
+      "integrated_psd_error": 0.0
+    }
+  ],
+  "off_bin_results": [
+    {
+      "window": "rectangular",
+      "largest_sampled_amplitude": 0.6381870323534142,
+      "power_fraction_outside_4_hz": 0.05042135122041504
+    },
+    {
+      "window": "hann",
+      "largest_sampled_amplitude": 0.8488264026480843,
+      "power_fraction_outside_4_hz": 2.6715954493944875e-05
+    }
+  ],
+  "rectangular_noise_parseval_absolute_error": 0.0,
+  "noise_rms": 0.29917805104574957,
+  "noise_integrated_psd": 0.08982433096126362,
+  "checks": {
+    "coherent_peak_rms_window_normalization": true,
+    "coherent_gain_and_enbw": true,
+    "coherent_psd_integral": true,
+    "rectangular_parseval_noise": true,
+    "noise_rms_statistical_tolerance": true,
+    "noise_psd_statistical_tolerance": true,
+    "off_bin_window_reduces_distant_leakage": true,
+    "off_bin_scalloping_is_not_hidden": true,
+    "mixed_tones_and_dc": true,
+    "nyquist_peak_equals_rms": true
+  },
+  "passed": true
+}

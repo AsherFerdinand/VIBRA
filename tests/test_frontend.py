@@ -142,3 +142,50 @@ def test_transient_workspace_initial_profile_and_invalid_grid() -> None:
     assert not app.exception
     assert app.error
     assert "transient_solved" not in app.session_state
+
+
+def test_signal_workspace_fem_integration_and_spectrum_controls() -> None:
+    app = AppTest.from_file(str(APP), default_timeout=30).run()
+    app.sidebar.selectbox[0].select("Signal Diagnostics").run()
+    next(
+        widget for widget in app.button if widget.label == "Generate cantilever pulse simulation"
+    ).click().run()
+    assert not app.exception
+    next(widget for widget in app.button if widget.label == "Analyze signal").click().run()
+    assert not app.exception
+    assert not app.error
+    saved = app.session_state["signal_solved"]
+    assert saved["series"].provenance.kind == "fem"
+    assert saved["result"].dominant_frequency_hz > 0
+    next(widget for widget in app.radio if widget.label == "Primary spectrum").set_value(
+        "PSD"
+    ).run()
+    assert not app.exception
+    next(widget for widget in app.selectbox if widget.label == "Signal quantity").select(
+        "acceleration"
+    ).run()
+    next(widget for widget in app.button if widget.label == "Analyze signal").click().run()
+    assert not app.exception
+    assert app.session_state["signal_solved"]["series"].unit == "m/s^2"
+
+
+def test_signal_workspace_csv_and_invalid_sampling() -> None:
+    import numpy as np
+
+    app = AppTest.from_file(str(APP), default_timeout=30).run()
+    app.sidebar.selectbox[0].select("Signal Diagnostics").run()
+    next(widget for widget in app.radio if widget.label == "Signal source").set_value(
+        "CSV import"
+    ).run()
+    text = "time,signal\n" + "\n".join(
+        f"{i / 1024},{np.cos(2 * np.pi * 100 * i / 1024)}" for i in range(1024)
+    )
+    app.text_area[0].set_value(text).run()
+    next(widget for widget in app.button if widget.label == "Analyze signal").click().run()
+    assert not app.exception
+    assert not app.error
+    assert app.session_state["signal_solved"]["result"].dominant_frequency_hz == 100
+    app.text_area[0].set_value("time,signal\n0,1\n.1,2\n.2,3\n.4,4").run()
+    assert not app.exception
+    assert app.error
+    assert "signal_solved" not in app.session_state
