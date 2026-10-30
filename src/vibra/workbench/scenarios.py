@@ -57,6 +57,16 @@ def scenario_figure(experience: str) -> Any:
             overlay=False,
             title="Reference model sketch · not solved",
         )
+        figure.data = tuple(
+            trace
+            for trace in figure.data
+            if trace.name
+            not in (
+                "Critical |field| (sampled)",
+                "Max translation (sampled)",
+                "Critical section stress (±fiber)",
+            )
+        )
         figure.update_layout(
             height=235,
             showlegend=False,
@@ -69,6 +79,7 @@ def scenario_figure(experience: str) -> Any:
                 trace.marker.coloraxis = None
                 trace.marker.color = "#147d75"
                 trace.marker.size = 5
+                trace.hovertemplate = "Reference model geometry; not solved<extra></extra>"
         figure.update_xaxes(visible=False)
         figure.update_yaxes(visible=False)
         for annotation in figure.layout.annotations:
@@ -132,7 +143,7 @@ def scenario_figure(experience: str) -> Any:
 
 def scenario_panel(experience: str) -> None:
     title, physical, question, change, reveal = SCENARIOS[experience]
-    with st.expander("Start here · " + title, expanded=True):
+    with st.expander("Start here · " + title, expanded=False):
         words, sketch = st.columns([1.2, 1])
         with words:
             st.markdown("**What is happening?** " + physical)

@@ -40,3 +40,10 @@ is a separate activity from solver-to-solver comparison.
 Signal extensions should add verified Welch PSD, cross spectra/FRF estimation,
 anti-alias/resampling choices and calibrated measurement ingestion before claiming
 measured modal identification or automated health grading.
+
+
+Version 0.9 completes the depth-only stronger-support challenge, calculated A/B
+comparison, richer physical hover/critical markers, installed motor topology and
+harmonic inspection, and paired synthetic diagnostics. Next: student usability and
+accessibility feedback, followed by independently verified measurement/FRF workflows.
+General design optimization, drag-to-edit CAD and additional physics are not implied.

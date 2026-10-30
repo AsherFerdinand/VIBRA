@@ -37,7 +37,7 @@ theme = st.sidebar.selectbox(
 )
 interface_theme(theme)
 st.title("VIBRA")
-st.caption("SEE THE STRUCTURE · APPLY A LOAD · UNDERSTAND THE RESPONSE · 0.8")
+st.caption("INTERACTIVE ENGINEERING INVESTIGATION · 0.9")
 st.sidebar.caption("Model → Loads → Solve → Visualize → Interpret")
 scenario_panel(experience)
 if level == "Beginner":

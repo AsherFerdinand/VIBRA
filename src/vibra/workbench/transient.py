@@ -228,7 +228,8 @@ def workspace() -> None:
     history = response_history(result)
     history.add_vline(x=float(result.time[index]), line_dash="dash", line_color="#ba4b37")
     plot(history, width="stretch")
-    plot(energy_history(result), width="stretch")
+    with st.expander("Energy accounting history"):
+        plot(energy_history(result), width="stretch")
     if peak_translation / saved["geometry"].length > 0.05:
         st.warning(
             "Displacement exceeds 5% of beam length; small-displacement theory may be unsuitable."

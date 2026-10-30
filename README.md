@@ -4,7 +4,7 @@ Why does a shelf support bend? When can a motor isolator reduce shaking force?
 What can a vibration recording actually tell you?
 
 VIBRA is an educational engineering workbench for exploring those questions with
-real, independently verified numerical methods. **Version 0.8.0 starts in Beginner
+real, independently verified numerical methods. **Version 0.9.0 starts in Beginner
 mode:** a short scenario, a one-click example, a physical visualization, and a
 computed explanation. The complete engineering workbench remains in Advanced mode.
 
@@ -14,7 +14,7 @@ Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/). No credentials, ANSY
 MATLAB, database, Docker, or dedicated GPU are required.
 
 ```bash
-git clone --branch feat/beginner-storytelling-dark-mode --single-branch https://github.com/AsherFerdinand/VIBRA.git
+git clone --branch feat/interactive-engineering-investigation --single-branch https://github.com/AsherFerdinand/VIBRA.git
 cd VIBRA
 uv sync --frozen
 uv run streamlit run frontend/app.py --server.address 0.0.0.0 --server.port 8501
@@ -45,7 +45,25 @@ synthetic vibration frequencies closer together. Every submitted result ends wit
 convergence, verification and export controls. The 0.5 bare-rail reference and the
 0.6 installed bare/rigid/isolated motor studies remain available. Advanced signal
 processing can use the latest submitted Beginner spin recording as well as FEM or
-user CSV data. No numerical solver or signal-processing algorithm changed in 0.8.
+user CSV data. No numerical solver or signal-processing algorithm changed in 0.9.
+
+## Investigate a design, not just a graph
+
+Choose **Cantilever Beam → Design a Stronger Support → Start design challenge**.
+Change depth from 20 to 24 mm and **Evaluate design**. The actual FEM calculation
+reduces downward movement by 42.13% while adding 20% beam mass, meeting both
+simplified targets. Compare saved A and submitted B on shared axes, magnification
+and color limits. Inspect displacement, stress and N/V/M together by hover.
+A requirement pass is not a strength or real-world safety approval.
+
+The solved model is central; results and computed interpretation follow below.
+Motor exploration offers bare/rigid/isolated topologies and full-complex harmonic
+snapshots; diagnostics pairs the original time samples with their spectrum.
+Secondary plots and numerical tools are collapsible. Parameter edits require an
+explicit solve; visual controls preserve submitted numerical results.
+
+Read the [Engineering Investigation guide](docs/engineering-investigation.md) for
+challenge feasibility, A/B steps, sign conventions, motor tradeoffs and limitations.
 
 ## Light and Dark
 
@@ -59,16 +77,21 @@ These are genuine Chromium screenshots of the implemented application:
 
 | Example | Light | Dark |
 | --- | --- | --- |
-| Shelf | [Open screenshot](docs/screenshots/0.8/shelf-light.png) | [Open screenshot](docs/screenshots/0.8/shelf-dark.png) |
-| Motor | [Open screenshot](docs/screenshots/0.8/motor-light.png) | [Open screenshot](docs/screenshots/0.8/motor-dark.png) |
-| Simulated spin recording | [Open screenshot](docs/screenshots/0.8/diagnostics-light.png) | [Open screenshot](docs/screenshots/0.8/diagnostics-dark.png) |
+| A/B support challenge | [Open screenshot](docs/screenshots/0.9/challenge-light.png) | [Open screenshot](docs/screenshots/0.9/challenge-dark.png) |
+| Motor | [Open screenshot](docs/screenshots/0.9/motor-light.png) | [Open screenshot](docs/screenshots/0.9/motor-dark.png) |
+| Simulated spin recording | [Open screenshot](docs/screenshots/0.9/diagnostics-light.png) | [Open screenshot](docs/screenshots/0.9/diagnostics-dark.png) |
 
-![Actual Beginner shelf workflow in Dark mode](docs/screenshots/0.8/shelf-dark.png)
+![Actual A/B engineering investigation in Dark mode](docs/screenshots/0.9/challenge-dark.png)
 
-[Browser evidence](docs/screenshots/0.8/browser-checks.json) records rendered colors,
+[Browser evidence](docs/screenshots/0.9/browser-checks.json) records rendered colors,
 contrast checks and page errors for all six views. Native browser dialogs and some
 Streamlit data grids can retain their own appearance. The app uses stable widget
 roles/test identifiers rather than changing global server theme configuration.
+
+Measured cloud CPU costs for the new two-design viewport are about 86 ms and
+132 KB of Plotly JSON; a candidate static/modal/recovery calculation took about
+6.5 ms. These exclude browser/Streamlit memory and are not laptop guarantees.
+See the [executed performance report](docs/results/investigation-performance.json).
 
 ## What the examples compute
 
@@ -86,6 +109,7 @@ peak alone does not diagnose a mechanical fault.
 
 ```bash
 uv run python examples/beginner_workflows.py
+uv run python examples/support_design_investigation.py
 uv run pytest --junitxml=artifacts/pytest.xml
 uv run ruff check .
 uv run ruff format --check .
@@ -99,7 +123,7 @@ uv run vibra-verify-stress
 uv build
 ```
 
-The new example writes actual shelf, installed-motor, synthetic-signal and deterministic
+The beginner example writes actual shelf, installed-motor, synthetic-signal and deterministic
 interpretation JSON under `artifacts/beginner-workflows/`. All earlier examples and
 GitHub Actions checks remain. The lockfile selects Python 3.12 dependencies. No new
 runtime dependencies or cloud services were introduced.

@@ -53,14 +53,34 @@ def model_preview(
     monitors: tuple[int, ...] = (),
     key: str = "model",
 ) -> None:
+    figure = engineering_viewport(
+        model,
+        np.zeros(3 * len(model.nodes)),
+        loads=loads,
+        monitors=monitors,
+        title="Model preview · not solved",
+    )
+    figure.data = tuple(
+        trace
+        for trace in figure.data
+        if trace.name
+        not in (
+            "Critical |field| (sampled)",
+            "Max translation (sampled)",
+            "Critical section stress (±fiber)",
+        )
+    )
+    for trace in figure.data:
+        if getattr(trace.marker, "coloraxis", None):
+            trace.marker.coloraxis = None
+            trace.marker.color = "#147d75"
+            trace.hovertemplate = (
+                f"{trace.name}<br>Local x=%{{customdata[0]:.5g}} m"
+                "<br>Geometry preview; response not solved<extra></extra>"
+            )
+    figure.update_layout(coloraxis_showscale=False, title_text="Model preview · not solved")
     plot(
-        engineering_viewport(
-            model,
-            np.zeros(3 * len(model.nodes)),
-            loads=loads,
-            monitors=monitors,
-            title="Model preview · not solved",
-        ),
+        figure,
         width="stretch",
         key=key + "_preview",
     )

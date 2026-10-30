@@ -1,0 +1,41 @@
+{
+  "python": "3.12.14",
+  "system": "Linux",
+  "model": {
+    "designs": 2,
+    "elements_per_design": 12,
+    "stations_per_element": 21
+  },
+  "operations": {
+    "candidate_static_modal_recovery": {
+      "median_wall_s": 0.006456791998061817,
+      "repetitions": 3,
+      "samples_s": [
+        0.006563262999407016,
+        0.006456791998061817,
+        0.00604842800021288
+      ]
+    },
+    "two_design_viewport": {
+      "median_wall_s": 0.08607808699889574,
+      "repetitions": 3,
+      "samples_s": [
+        0.08678395099923364,
+        0.0857009309984278,
+        0.08607808699889574
+      ]
+    },
+    "dark_presentation_copy": {
+      "median_wall_s": 0.036932864000846166,
+      "repetitions": 3,
+      "samples_s": [
+        0.040390744998148875,
+        0.036932864000846166,
+        0.036033931999554625
+      ]
+    }
+  },
+  "comparison_json_bytes": 132391,
+  "process_peak_RSS_MiB": 140.12890625,
+  "scope": "Executed cloud CPU only; excludes browser/Streamlit memory and is not a laptop guarantee."
+}

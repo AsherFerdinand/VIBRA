@@ -19,7 +19,20 @@ def interface_theme(theme: Theme) -> None:
  color:{p.text} !important;
 
     }}
-    [data-testid="stMainBlockContainer"] {{padding-top:2rem;}}
+    [data-testid="stMainBlockContainer"] {{padding-top:4rem; max-width:1600px;}}
+    [data-testid="stMainBlockContainer"] h1 {{font-size:2rem;
+letter-spacing:.06em; margin-bottom:0; padding:0 0 .5rem;}}
+    [data-testid="stMainBlockContainer"] h2 {{font-size:1.45rem;}}
+    [data-testid="stMainBlockContainer"] h3 {{font-size:1.15rem;}}
+    [data-testid="stSidebar"] {{min-width:18rem; max-width:22rem;}}
+    [data-testid="stMetricValue"] {{font-size:1.65rem;}}
+    [data-testid="stPlotlyChart"] {{border-radius:8px;}}
+    [data-testid="stVerticalBlock"] {{gap:.8rem;}}
+    [data-testid="stTable"] th, [data-testid="stTable"] td {{
+        background:{p.background} !important; color:{p.text} !important;
+        border-color:{p.grid} !important; padding:.45rem .6rem;
+    }}
+    [data-testid="stTable"] thead th {{background:{p.surface} !important;}}
     [data-testid="stSidebar"],
 [data-testid="stSidebarContent"] {{background:{p.surface} !important;
 color:{p.text} !important;
@@ -119,3 +132,16 @@ def plot(figure: Any, **kwargs: Any) -> Any:
     theme: Theme = st.session_state.get("plot_theme", "Light")
     kwargs["theme"] = None
     return st.plotly_chart(themed_figure(figure, theme), **kwargs)
+
+
+def comparison_table(rows: list[dict[str, str | float]]) -> None:
+    """Small accessible, theme-consistent tables; full precision remains in exports."""
+    st.table(
+        [
+            {key: value if isinstance(value, str) else f"{value:.6g}" for key, value in row.items()}
+            for row in rows
+        ],
+        hide_index=True,
+        border="horizontal",
+        width="stretch",
+    )

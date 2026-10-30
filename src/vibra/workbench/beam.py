@@ -217,53 +217,54 @@ def workspace(analysis: str) -> None:
                 static_view(
                     model, result, scale, key="beam_static", monitors=(len(model.nodes) - 1,)
                 )
-                st.dataframe(
-                    {
-                        "Quantity": ["Tip displacement [m]", "Tip rotation [rad]"],
-                        "FEM": [
-                            float(result.displacement[-1, 1]),
-                            float(result.displacement[-1, 2]),
-                        ],
-                        "Analytical": [exact_displacement, exact_rotation],
-                    },
-                    hide_index=True,
-                )
-                st.dataframe(
-                    {
-                        "Node": result.node_ids,
-                        "ux [m]": result.displacement[:, 0],
-                        "uy [m]": result.displacement[:, 1],
-                        "rz [rad]": result.displacement[:, 2],
-                        "Reaction Fx [N]": result.reactions[:, 0],
-                        "Reaction Fy [N]": result.reactions[:, 1],
-                        "Reaction Mz [N m]": result.reactions[:, 2],
-                    },
-                    hide_index=True,
-                )
-                with st.expander("Local element end forces"):
+                with st.expander("Numerical tables · equilibrium & analytical reference"):
                     st.dataframe(
-                        [
-                            {
-                                "Element": eid,
-                                **dict(
-                                    zip(
-                                        [
-                                            "N1 [N]",
-                                            "V1 [N]",
-                                            "M1 [N m]",
-                                            "N2 [N]",
-                                            "V2 [N]",
-                                            "M2 [N m]",
-                                        ],
-                                        values.tolist(),
-                                        strict=True,
-                                    )
-                                ),
-                            }
-                            for eid, values in result.element_end_forces.items()
-                        ],
+                        {
+                            "Quantity": ["Tip displacement [m]", "Tip rotation [rad]"],
+                            "FEM": [
+                                float(result.displacement[-1, 1]),
+                                float(result.displacement[-1, 2]),
+                            ],
+                            "Analytical": [exact_displacement, exact_rotation],
+                        },
                         hide_index=True,
                     )
+                    st.dataframe(
+                        {
+                            "Node": result.node_ids,
+                            "ux [m]": result.displacement[:, 0],
+                            "uy [m]": result.displacement[:, 1],
+                            "rz [rad]": result.displacement[:, 2],
+                            "Reaction Fx [N]": result.reactions[:, 0],
+                            "Reaction Fy [N]": result.reactions[:, 1],
+                            "Reaction Mz [N m]": result.reactions[:, 2],
+                        },
+                        hide_index=True,
+                    )
+                    with st.expander("Local element end forces"):
+                        st.dataframe(
+                            [
+                                {
+                                    "Element": eid,
+                                    **dict(
+                                        zip(
+                                            [
+                                                "N1 [N]",
+                                                "V1 [N]",
+                                                "M1 [N m]",
+                                                "N2 [N]",
+                                                "V2 [N]",
+                                                "M2 [N m]",
+                                            ],
+                                            values.tolist(),
+                                            strict=True,
+                                        )
+                                    ),
+                                }
+                                for eid, values in result.element_end_forces.items()
+                            ],
+                            hide_index=True,
+                        )
             else:
                 st.caption("Solver: SciPy symmetric generalized eigensolve · Kφ = ω²Mφ · φᵀMφ = 1")
                 st.dataframe(
@@ -316,11 +317,12 @@ def workspace(analysis: str) -> None:
                     key="beam_mode",
                     modal=True,
                 )
-                plot(convergence_plot(saved_result["convergence"]), width="stretch")
-                st.write(
-                    "Analytical first three bending frequencies [Hz]:",
-                    cantilever_bending_hz(geometry, material, section),
-                )
+                with st.expander("Modal mesh convergence & analytical reference"):
+                    plot(convergence_plot(saved_result["convergence"]), width="stretch")
+                    st.write(
+                        "Analytical first three bending frequencies [Hz]:",
+                        cantilever_bending_hz(geometry, material, section),
+                    )
         with st.expander("Submitted model and analysis settings"):
             st.json(
                 engineering_report(

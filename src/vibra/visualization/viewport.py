@@ -134,6 +134,14 @@ def engineering_viewport(
         )
 
     motion_unit = "relative" if modal else "m"
+    # Keep each element's one-sided fields separate, including at shared nodes.
+    # Models without explicit fiber geometry still support displacement viewing.
+    stress_result = (
+        recover_stress(model, state)
+        if not modal and all(e.section.extreme_fiber_distance is not None for e in model.elements)
+        else None
+    )
+    stresses = {s.field.element_id: s for s in stress_result.sections} if stress_result else {}
     for item in data:
         beam = item.beam
         xy = beam.position_m + display_scale * beam.displacement_m
@@ -158,13 +166,29 @@ def engineering_viewport(
                 item.values_SI * factor,
             )
         )
+        extra_hover = ""
+        if not modal:
+            section = stresses.get(beam.element_id)
+            extra = [beam.axial_force_N, beam.shear_force_N, beam.bending_moment_Nm]
+            if section is not None:
+                extra.extend((section.combined_top_Pa / 1e6, section.combined_bottom_Pa / 1e6))
+            custom = np.column_stack((custom, *extra))
+            extra_hover = (
+                "<br>N=%{customdata[4]:.5g} N (tension +)"
+                "<br>V=%{customdata[5]:.5g} N (dM/dx)"
+                "<br>M=%{customdata[6]:.5g} N m"
+            )
+            if section is not None:
+                extra_hover += (
+                    "<br>σ top=%{customdata[7]:.5g} MPa<br>σ bottom=%{customdata[8]:.5g} MPa"
+                )
         figure.add_trace(
             go.Scatter(
                 x=xy[:, 0],
                 y=xy[:, 1],
                 mode="lines+markers",
-                line=dict(color="#b9cbd3", width=2),
-                marker=dict(size=9, color=item.values_SI * factor, coloraxis="coloraxis"),
+                line=dict(color="#b9cbd3", width=3),
+                marker=dict(size=6, color=item.values_SI * factor, coloraxis="coloraxis"),
                 customdata=custom,
                 name=f"Beam {beam.element_id}",
                 showlegend=False,
@@ -173,7 +197,7 @@ def engineering_viewport(
                     f"m<br>UX=%{{customdata[1]:.5g}} "
                     f"{motion_unit}<br>UY=%{{customdata[2]:.5g}} "
                     f"{motion_unit}<br>{field}=%{{customdata[3]:.5g}} "
-                    f"{unit}<extra></extra>"
+                    f"{unit}{extra_hover}<extra></extra>"
                 ),
             )
         )
@@ -205,6 +229,53 @@ def engineering_viewport(
                 )
                 break
             index += len(item.values_SI)
+        # Distinct physical observations: a stress hotspot need not move most.
+        peak_beam, peak_station = max(
+            ((item.beam, i) for item in data for i in range(len(item.values_SI))),
+            key=lambda pair: float(np.linalg.norm(pair[0].displacement_m[pair[1]])),
+        )
+        xy = (
+            peak_beam.position_m[peak_station]
+            + display_scale * peak_beam.displacement_m[peak_station]
+        )
+        peak_value = np.linalg.norm(peak_beam.displacement_m[peak_station])
+        if modal:
+            peak_value /= reference
+        figure.add_trace(
+            go.Scatter(
+                x=[xy[0]],
+                y=[xy[1]],
+                mode="markers",
+                marker=dict(symbol="circle-open", size=16, color="#147d75", line=dict(width=2)),
+                name="Max translation (sampled)",
+                hovertemplate=(
+                    f"Element {peak_beam.element_id}, "
+                    f"local x={peak_beam.local_x_m[peak_station]:.5g} m"
+                    f"<br>|u|={peak_value:.6g} "
+                    f"{motion_unit}<extra></extra>"
+                ),
+            )
+        )
+    if stress_result:
+        critical = stress_result.critical_absolute
+        beam = next(item.beam for item in data if item.beam.element_id == critical.element_id)
+        station = int(np.argmin(abs(beam.local_x_m - critical.local_x_m)))
+        xy = beam.position_m[station] + display_scale * beam.displacement_m[station]
+        figure.add_trace(
+            go.Scatter(
+                x=[xy[0]],
+                y=[xy[1]],
+                mode="markers",
+                marker=dict(symbol="x", size=12, color="#e06a2a", line=dict(width=2)),
+                name="Critical section stress (±fiber)",
+                hovertemplate=(
+                    f"Element {critical.element_id}, local x={critical.local_x_m:.5g} m"
+                    f"<br>fiber y={critical.fiber_y_m:.5g} m"
+                    f"<br>σ={critical.normal_stress_Pa / 1e6:.6g} MPa"
+                    "<br>Axis marker; section result, not solid stress<extra></extra>"
+                ),
+            )
+        )
     fixed: dict[int, set[DOF]] = {}
     for constraint in model.constraints:
         fixed.setdefault(constraint.node, set()).add(constraint.dof)
@@ -294,11 +365,12 @@ def engineering_viewport(
                 y=[a[1], b[1]],
                 mode="lines+markers",
                 line=dict(color="#bd7139", width=3),
-                marker=dict(symbol="diamond-open", size=10),
+                marker=dict(symbol="hourglass-open", size=15, color="#bd7139"),
                 name=f"Mount {mount.id}" + (" → ground" if mount.node_b is None else " → rail"),
                 hovertemplate=(
                     f"k={mount.stiffness:.5g} N/m; c={mount.damping:.5g} N "
-                    f"s/m{force}<extra></extra>"
+                    f"s/m{force}<br>Symbolic spring/dashpot; reference sites may coincide"
+                    "<extra></extra>"
                 ),
             )
         )
@@ -307,6 +379,21 @@ def engineering_viewport(
         ref = point(body.node)
         radius = np.sqrt(body.inertia_z / body.mass) if body.mass else 0.0
         angle = np.linspace(0, 2 * np.pi, 41)
+        if overlay:
+            reference_center = (
+                nodes[body.node].x + body.offset[0],
+                nodes[body.node].y + body.offset[1],
+            )
+            figure.add_trace(
+                go.Scatter(
+                    x=reference_center[0] + radius * np.cos(angle),
+                    y=reference_center[1] + radius * np.sin(angle),
+                    mode="lines",
+                    line=dict(color="#8d9ca9", dash="dot", width=1),
+                    name="Undeformed motor inertia glyph",
+                    hoverinfo="skip",
+                )
+            )
         figure.add_trace(
             go.Scatter(
                 x=center[0] + radius * np.cos(angle),

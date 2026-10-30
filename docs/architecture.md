@@ -246,3 +246,23 @@ for both BaseWeb and React Aria versions, without mutating global server configu
 Native data-grid/file-dialog appearance remains a framework/browser boundary.
 Theme/UI tests and real browser contrast checks protect this boundary. Runtime
 dependencies and all numerical core/solver modules are unchanged.
+
+
+## Engineering investigation (0.9)
+
+`studies/investigation.py` composes the existing shelf/static/stress and modal
+paths into a calculated depth-only design, mass/response comparisons and explicit
+requirement status. Its analytical feasibility formula is independent of the FEM
+result evaluation. `visualization/investigation.py` builds fair A/B panels sharing
+physical axes, magnification and contour limits, and renders installed motor
+snapshots from full complex phasors. `workbench/investigation.py` owns only explicit
+atomic form submission and per-session baseline/current result state. Visual edits do not
+call either solver. There is no global cache of mutable result arrays.
+
+The common viewport adds one-sided N/V/M and both-fiber stress hover data, separate
+sampled translation/section-stress markers, symbolic spring/dashpot sites and an
+undeformed motor inertia glyph. Preview views hide response contours and critical
+markers until solving. The shared presentation helper renders compact accessible
+comparison tables in both themes. Sidebar controls, a central model, lower results
+and collapsible secondary tools preserve the existing Beginner/Advanced navigation.
+All verified solvers, input physics and signal normalization remain unchanged.

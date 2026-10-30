@@ -198,7 +198,8 @@ def workspace() -> None:
     )
     amplitude_plot, phase_plot = response_figures(result)
     plot(amplitude_plot, width="stretch")
-    plot(phase_plot, width="stretch")
+    with st.expander("Phase versus frequency"):
+        plot(phase_plot, width="stretch")
     st.caption(
         "Diamonds: sampled interior maxima. Dotted lines: undamped natural frequencies. "
         "Phase is wrapped and omitted at zero/negligible response. "

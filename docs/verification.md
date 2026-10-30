@@ -174,3 +174,32 @@ strict Mypy (96 source files), all six verification CLIs, both study CLIs and
 nine reproducible examples. The wheel was installed and exercised outside the
 checkout. Six real browser captures cover all three Beginner experiences in
 Light and Dark. These are executed checks, not experimental validation.
+
+## Engineering investigation (0.9)
+
+The unchanged 0.8 baseline first passed all 232 tests and six verification CLIs.
+The 0.9 delivery suite passed 247 tests. `tests/test_investigation.py` adds
+independent rectangular cantilever displacement, bending stress, geometric mass
+and continuous first-frequency references; feasible interval/boundary and failed
+requirement cases; percentage calculations and result interpretation; actual
+A/B common scales/axes/colors; physical hover and one-sided nodal force/moment
+jumps; and no solves or numerical changes from view controls. It also checks
+full-complex motor snapshots/relative motion and full-record diagnostics despite
+visual time zoom. Existing Beginner/Advanced and numerical assertions remain.
+
+Ruff lint/format, strict Mypy, all six verification CLIs, both study CLIs, all ten
+examples, build and installed-wheel execution are required and were executed.
+The [reproducible support example](../examples/support_design_investigation.py)
+produces the actual 20/24 mm design comparison. Independent analytical errors are
+bounded in tests by 2e-8 relative for tip movement/stress, 1e-14 for mass and
+2e-6 for first natural frequency. Requirement comparisons allow 1e-7 percentage
+points solely for floating-point boundary roundoff.
+
+[Real-browser evidence](screenshots/0.9/browser-checks.json) records six Light/Dark
+captures, rendered common A/B axes, 20/24/28 mm status checks, theme-invariant
+geometry/hover values, actual Plotly hover text, motor topology/harmonic switching,
+synthetic-tone edits and empty page-error lists. Browser timings are observed
+cloud click-to-visible values, not laptop promises. The
+[CPU performance report](results/investigation-performance.json) separately
+records actual repeated solve, viewport and presentation costs. Numerical
+verification does not constitute experimental validation or ANSYS correlation.

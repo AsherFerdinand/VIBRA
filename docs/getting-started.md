@@ -1,5 +1,14 @@
 # Getting Started — three questions you can investigate
 
+> **VIBRA 0.9:** the model is central, scenario introductions start collapsed,
+> and secondary plots are expandable. **Cantilever Beam → Design a Stronger Support**
+> adds the depth-only challenge and fair A/B comparison. Follow the
+> [Engineering Investigation guide](engineering-investigation.md) for the complete
+> 20 → 24 mm experiment and genuine screenshots in both themes. The existing
+> shelf exploration below remains available as **Explore the support**. Motor now
+> lets you select bare/rigid/isolated and static/harmonic views; diagnostics pairs
+> time and spectrum, with a display-only time zoom.
+
 VIBRA opens in **Beginner** mode. You do not need to know FEM, FFT or PSD before
 running an example. Start with a short physical story, look at the reference sketch,
 and press one example button. Every example ends with **What happened?**, **Why?**
@@ -42,7 +51,7 @@ not a substitute for your submitted result below it.
 
 | Light | Dark |
 | --- | --- |
-| [Actual shelf workflow](screenshots/0.8/shelf-light.png) | [Actual shelf workflow](screenshots/0.8/shelf-dark.png) |
+| [0.8 shelf workflow (same numerical example)](screenshots/0.8/shelf-light.png) | [0.8 shelf workflow (same numerical example)](screenshots/0.8/shelf-dark.png) |
 
 The wall resists the applied force and its turning effect. A tip force has a larger
 lever arm toward the fixed end, so bending stress tends to be largest there for
@@ -61,7 +70,7 @@ does not provide. Warnings identify large actual movement or poor slenderness.
 3. Inspect the loaded assembly. Its prescribed static 200 N force gives approximately
    10.54 mm interface movement. The static load is an illustrative input: changing
    motor mass changes inertia, not automatically the applied static weight.
-4. Read the transmission plot at the default 60 Hz periodic force. Root-force
+4. Open **Frequency sweep · force transmission** at the default 60 Hz periodic force. Root-force
    amplitude is about 3.332% of the applied amplitude with isolators, versus 9.062%
    with rigid attachment. These are force-amplitude ratios, not energy efficiency.
    Ratios can exceed 100% near amplification.
@@ -72,7 +81,7 @@ does not provide. Warnings identify large actual movement or poor slenderness.
 
 | Light | Dark |
 | --- | --- |
-| [Actual motor workflow](screenshots/0.8/motor-light.png) | [Actual motor workflow](screenshots/0.8/motor-dark.png) |
+| [Actual motor workflow](screenshots/0.9/motor-light.png) | [Actual motor workflow](screenshots/0.9/motor-dark.png) |
 
 Beginner controls expose motor mass, total vertical mount stiffness and force
 frequency. Other values are fixed at the documented installed-study defaults.
@@ -106,7 +115,7 @@ idealized support is not validated vehicle behavior.
 
 | Light | Dark |
 | --- | --- |
-| [Actual diagnostics workflow](screenshots/0.8/diagnostics-light.png) | [Actual diagnostics workflow](screenshots/0.8/diagnostics-dark.png) |
+| [Actual diagnostics workflow](screenshots/0.9/diagnostics-light.png) | [Actual diagnostics workflow](screenshots/0.9/diagnostics-dark.png) |
 
 ### A short vocabulary
 
@@ -156,6 +165,7 @@ physics and preserves the tested Play/Pause behavior.
 
 ```bash
 uv run python examples/beginner_workflows.py
+uv run python examples/support_design_investigation.py
 uv run pytest
 uv run vibra-verify
 uv run vibra-verify-harmonic

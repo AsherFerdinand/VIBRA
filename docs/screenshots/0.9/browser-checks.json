@@ -1,0 +1,430 @@
+{
+  "source": "Actual running Streamlit app; isolated Playwright and system Chromium; unmodified captures",
+  "viewport_px": [
+    1600,
+    2200
+  ],
+  "timing_scope": "Observed cloud browser click-to-visible result, includes rerun/render; not a laptop benchmark",
+  "checks": [
+    {
+      "experience": "Cantilever Beam",
+      "theme": "Light",
+      "page_errors": [],
+      "heading_clearance": {
+        "top": 64,
+        "header_bottom": 60
+      },
+      "colors": {
+        "comboboxes": [
+          {
+            "text": "rgb(25, 52, 66)",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "text": "rgb(25, 52, 66)",
+            "bg": "rgb(255, 255, 255)"
+          }
+        ],
+        "table_cells": [
+          {
+            "text": "rgb(25, 52, 66)",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "text": "rgb(25, 52, 66)",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "text": "rgb(25, 52, 66)",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "text": "rgb(25, 52, 66)",
+            "bg": "rgb(255, 255, 255)"
+          }
+        ],
+        "caption_opacity": "1",
+        "plots": [
+          {
+            "bg": "#ffffff",
+            "text": "#193442"
+          },
+          {
+            "bg": "#ffffff",
+            "text": "#193442"
+          }
+        ]
+      },
+      "interpretation": "What happened? Design B reduces downward movement by 42.130% and changes beam mass by +20.000%. Both requirements are met in this linear beam model.",
+      "geometry_and_hover_unchanged": true,
+      "click_to_result_visible_s": 2.237354717002745,
+      "challenge_cases": {
+        "20mm": "movement NOT MET, mass PASS",
+        "28mm": "movement PASS, mass NOT MET",
+        "24mm": "both PASS"
+      },
+      "submitted_depth_verified_mm": 24,
+      "rendered_axes": {
+        "x1": [
+          -0.12,
+          1.12
+        ],
+        "x2": [
+          -0.12,
+          1.12
+        ],
+        "y1": [
+          -0.5969593965362662,
+          0.44695939653506944
+        ],
+        "y2": [
+          -0.5969593965362662,
+          0.44695939653506944
+        ]
+      }
+    },
+    {
+      "experience": "Cantilever Beam",
+      "theme": "Dark",
+      "page_errors": [],
+      "heading_clearance": {
+        "top": 64,
+        "header_bottom": 60
+      },
+      "colors": {
+        "comboboxes": [
+          {
+            "text": "rgb(237, 243, 248)",
+            "bg": "rgb(17, 27, 37)"
+          },
+          {
+            "text": "rgb(237, 243, 248)",
+            "bg": "rgb(17, 27, 37)"
+          }
+        ],
+        "table_cells": [
+          {
+            "text": "rgb(237, 243, 248)",
+            "bg": "rgb(17, 27, 37)"
+          },
+          {
+            "text": "rgb(237, 243, 248)",
+            "bg": "rgb(17, 27, 37)"
+          },
+          {
+            "text": "rgb(237, 243, 248)",
+            "bg": "rgb(17, 27, 37)"
+          },
+          {
+            "text": "rgb(237, 243, 248)",
+            "bg": "rgb(17, 27, 37)"
+          }
+        ],
+        "caption_opacity": "1",
+        "plots": [
+          {
+            "bg": "#111b25",
+            "text": "#edf3f8"
+          },
+          {
+            "bg": "#111b25",
+            "text": "#edf3f8"
+          }
+        ]
+      },
+      "interpretation": "What happened? Design B reduces downward movement by 42.130% and changes beam mass by +20.000%. Both requirements are met in this linear beam model.",
+      "geometry_and_hover_unchanged": true,
+      "click_to_result_visible_s": 2.237354717002745,
+      "challenge_cases": {
+        "20mm": "movement NOT MET, mass PASS",
+        "28mm": "movement PASS, mass NOT MET",
+        "24mm": "both PASS"
+      },
+      "submitted_depth_verified_mm": 24,
+      "rendered_axes": {
+        "x1": [
+          -0.12,
+          1.12
+        ],
+        "x2": [
+          -0.12,
+          1.12
+        ],
+        "y1": [
+          -0.5969593965362662,
+          0.44695939653506944
+        ],
+        "y2": [
+          -0.5969593965362662,
+          0.44695939653506944
+        ]
+      }
+    },
+    {
+      "experience": "Cantilever Beam",
+      "additional_check": "1366x900 responsive layout",
+      "geometry": {
+        "window_width": 1366,
+        "document_width": 1366,
+        "main_width": 1066,
+        "chart_widths": [
+          495,
+          906
+        ]
+      },
+      "page_errors": []
+    },
+    {
+      "experience": "Automotive Motor Mount",
+      "theme": "Light",
+      "page_errors": [],
+      "heading_clearance": {
+        "top": 64,
+        "header_bottom": 60
+      },
+      "colors": {
+        "comboboxes": [
+          {
+            "text": "rgb(25, 52, 66)",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "text": "rgb(25, 52, 66)",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "text": "rgb(25, 52, 66)",
+            "bg": "rgb(255, 255, 255)"
+          }
+        ],
+        "table_cells": [
+          {
+            "text": "rgb(25, 52, 66)",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "text": "rgb(25, 52, 66)",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "text": "rgb(25, 52, 66)",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "text": "rgb(25, 52, 66)",
+            "bg": "rgb(255, 255, 255)"
+          }
+        ],
+        "caption_opacity": "1",
+        "plots": [
+          {
+            "bg": "#ffffff",
+            "text": "#193442"
+          },
+          {
+            "bg": "#ffffff",
+            "text": "#193442"
+          },
+          {
+            "bg": "#ffffff",
+            "text": "#193442"
+          }
+        ]
+      },
+      "interpretation": "What happened? At 60 Hz, the isolated assembly root-force amplitude is 3.332% of the applied force, versus 9.062% with a rigid motor attachment: lower at this frequency. The prescribed static load moves the motor interface 10.54 mm.",
+      "geometry_and_hover_unchanged": true,
+      "click_to_result_visible_s": 4.955762182999024
+    },
+    {
+      "experience": "Automotive Motor Mount",
+      "theme": "Dark",
+      "page_errors": [],
+      "heading_clearance": {
+        "top": 64,
+        "header_bottom": 60
+      },
+      "colors": {
+        "comboboxes": [
+          {
+            "text": "rgb(237, 243, 248)",
+            "bg": "rgb(17, 27, 37)"
+          },
+          {
+            "text": "rgb(237, 243, 248)",
+            "bg": "rgb(17, 27, 37)"
+          },
+          {
+            "text": "rgb(237, 243, 248)",
+            "bg": "rgb(17, 27, 37)"
+          }
+        ],
+        "table_cells": [
+          {
+            "text": "rgb(237, 243, 248)",
+            "bg": "rgb(17, 27, 37)"
+          },
+          {
+            "text": "rgb(237, 243, 248)",
+            "bg": "rgb(17, 27, 37)"
+          },
+          {
+            "text": "rgb(237, 243, 248)",
+            "bg": "rgb(17, 27, 37)"
+          },
+          {
+            "text": "rgb(237, 243, 248)",
+            "bg": "rgb(17, 27, 37)"
+          }
+        ],
+        "caption_opacity": "1",
+        "plots": [
+          {
+            "bg": "#111b25",
+            "text": "#edf3f8"
+          },
+          {
+            "bg": "#111b25",
+            "text": "#edf3f8"
+          },
+          {
+            "bg": "#111b25",
+            "text": "#edf3f8"
+          }
+        ]
+      },
+      "interpretation": "What happened? At 60 Hz, the isolated assembly root-force amplitude is 3.332% of the applied force, versus 9.062% with a rigid motor attachment: lower at this frequency. The prescribed static load moves the motor interface 10.54 mm.",
+      "geometry_and_hover_unchanged": true,
+      "click_to_result_visible_s": 4.955762182999024
+    },
+    {
+      "experience": "Automotive Motor Mount",
+      "additional_check": "bare/rigid/isolated and full-complex harmonic snapshot",
+      "page_errors": []
+    },
+    {
+      "experience": "Automotive Motor Mount",
+      "additional_check": "1366x900 responsive layout",
+      "geometry": {
+        "window_width": 1366,
+        "document_width": 1366,
+        "main_width": 1066,
+        "chart_widths": [
+          495,
+          906,
+          1106
+        ]
+      },
+      "page_errors": []
+    },
+    {
+      "experience": "Vibration Diagnostics",
+      "theme": "Light",
+      "page_errors": [],
+      "heading_clearance": {
+        "top": 64,
+        "header_bottom": 60
+      },
+      "colors": {
+        "comboboxes": [
+          {
+            "text": "rgb(25, 52, 66)",
+            "bg": "rgb(255, 255, 255)"
+          },
+          {
+            "text": "rgb(25, 52, 66)",
+            "bg": "rgb(255, 255, 255)"
+          }
+        ],
+        "table_cells": [],
+        "caption_opacity": "1",
+        "plots": [
+          {
+            "bg": "#ffffff",
+            "text": "#193442"
+          },
+          {
+            "bg": "#ffffff",
+            "text": "#193442"
+          },
+          {
+            "bg": "#ffffff",
+            "text": "#193442"
+          }
+        ]
+      },
+      "interpretation": "What happened? The strongest resolved nonzero frequency bin is 12 Hz. Overall RMS vibration is 0.43692 m/s^2. Source: Simulated washing-machine steady spin segment.",
+      "geometry_and_hover_unchanged": true,
+      "click_to_result_visible_s": 1.174066651998146
+    },
+    {
+      "experience": "Vibration Diagnostics",
+      "theme": "Dark",
+      "page_errors": [],
+      "heading_clearance": {
+        "top": 64,
+        "header_bottom": 60
+      },
+      "colors": {
+        "comboboxes": [
+          {
+            "text": "rgb(237, 243, 248)",
+            "bg": "rgb(17, 27, 37)"
+          },
+          {
+            "text": "rgb(237, 243, 248)",
+            "bg": "rgb(17, 27, 37)"
+          }
+        ],
+        "table_cells": [],
+        "caption_opacity": "1",
+        "plots": [
+          {
+            "bg": "#111b25",
+            "text": "#edf3f8"
+          },
+          {
+            "bg": "#111b25",
+            "text": "#edf3f8"
+          },
+          {
+            "bg": "#111b25",
+            "text": "#edf3f8"
+          }
+        ]
+      },
+      "interpretation": "What happened? The strongest resolved nonzero frequency bin is 12 Hz. Overall RMS vibration is 0.43692 m/s^2. Source: Simulated washing-machine steady spin segment.",
+      "geometry_and_hover_unchanged": true,
+      "click_to_result_visible_s": 1.174066651998146
+    },
+    {
+      "experience": "Vibration Diagnostics",
+      "additional_check": "nearby synthetic components analyzed",
+      "page_errors": []
+    },
+    {
+      "experience": "Vibration Diagnostics",
+      "additional_check": "1366x900 responsive layout",
+      "geometry": {
+        "window_width": 1366,
+        "document_width": 1366,
+        "main_width": 1066,
+        "chart_widths": [
+          388,
+          445,
+          445
+        ]
+      },
+      "page_errors": []
+    },
+    {
+      "experience": "Advanced cantilever",
+      "additional_check": "actual Plotly hover exposes displacement, N/V/M and both section fibers",
+      "hover_text": [
+        "",
+        "Element 5Local x=0.041667 mUX=0.0000 mUY=-0.0031781 mDisplacement magnitude=3.1781 mmN=0.0000 N (tension +)V=100.00 N (dM/dx)M=-54.167 N m\u03c3 top=40.625 MPa\u03c3 bottom=-40.625 MPa",
+        ""
+      ],
+      "page_errors": []
+    }
+  ]
+}

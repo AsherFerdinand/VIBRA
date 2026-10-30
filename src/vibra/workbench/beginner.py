@@ -10,10 +10,15 @@ from vibra.studies.beginner import (
     MotorInputs,
     ShelfInputs,
     WasherInputs,
+    motor_config,
     run_motor,
     run_shelf,
     run_washer,
+    shelf_model,
 )
+from vibra.studies.installed import Topology, installed_model
+from vibra.studies.investigation import motor_comparison_rows
+from vibra.visualization.investigation import motor_snapshot
 from vibra.visualization.signals import spectrum_plots
 from vibra.visualization.viewport import Contour, engineering_viewport
 from vibra.workbench.interpretation import (
@@ -22,7 +27,9 @@ from vibra.workbench.interpretation import (
     render_interpretation,
     signal_interpretation,
 )
-from vibra.workbench.presentation import plot
+from vibra.workbench.investigation import workspace as challenge_workspace
+from vibra.workbench.presentation import comparison_table, plot
+from vibra.workbench.viewport import model_preview
 
 
 def _reset(values: dict[str, float]) -> None:
@@ -35,6 +42,15 @@ def _multiply(key: str, factor: float, limit: float, floor: float = 0.0) -> None
 
 
 def shelf() -> None:
+    investigation = st.radio(
+        "Support investigation",
+        ("Explore the support", "Design a Stronger Support"),
+        horizontal=True,
+        key="support_investigation",
+    )
+    if investigation == "Design a Stronger Support":
+        challenge_workspace()
+        return
     example = st.button(
         "Run shelf example",
         type="primary",
@@ -46,7 +62,7 @@ def shelf() -> None:
         "represented by a slender beam; this is not a complete shelf or fastener "
         "assessment."
     )
-    with st.sidebar.container(border=True):
+    with st.sidebar.container():
         st.subheader("Your shelf support")
         length = st.number_input(
             "Support length [m]",
@@ -108,6 +124,8 @@ def shelf() -> None:
             st.error(str(exc))
     saved = st.session_state.get("beginner_shelf_result")
     if saved is None:
+        preview = shelf_model(ShelfInputs(length_m=length, thickness_mm=thickness, load_N=load))
+        model_preview(preview, monitors=(12,), key="beginner_shelf")
         st.info(
             "Run the example to see how a load bends this support. No numerical setup is needed."
         )
@@ -116,26 +134,7 @@ def shelf() -> None:
         f"Submitted: {saved.inputs.length_m:g} m long · {saved.inputs.thickness_mm:g} "
         f"mm thick · {saved.inputs.load_N:g} N downward. Edit inputs, then run again."
     )
-    a, b, c = st.columns(3)
     tip = float(saved.result.displacement[-1, 1])
-    a.metric(
-        "Tip movement [mm]",
-        f"{tip * 1000:.4g}",
-        help="Negative Y means downward; this is physical movement before display magnification.",
-    )
-    b.metric(
-        "Largest beam normal stress [MPa]",
-        f"{abs(saved.stress.critical_absolute.normal_stress_Pa) / 1e6:.4g}",
-        help=(
-            "Internal tension or compression per area, including axial and bending "
-            "contributions at the outer section edges. This is not a strength or fatigue approval."
-        ),
-    )
-    c.metric(
-        "Wall reaction moment [N m]",
-        f"{saved.result.reactions[0, 2]:.4g}",
-        help="The turning effect resisted by the wall, like force times a lever arm.",
-    )
     if abs(tip) / saved.inputs.length_m > 0.05:
         st.warning(
             "The actual movement exceeds 5% of length. Small-displacement beam theory "
@@ -160,12 +159,26 @@ def shelf() -> None:
     view: Contour = "Displacement magnitude" if kind == "Movement" else "Combined normal stress"
     magnitude = float(np.linalg.norm(saved.result.displacement[:, :2], axis=1).max())
     scale = min(1000.0, 0.15 * saved.inputs.length_m / magnitude) if magnitude else 1.0
+    left, middle, right = st.columns((1, 1, 1))
+    overlay = left.checkbox("Show undeformed support", value=True)
+    scale = middle.number_input(
+        "Shelf magnification [×]",
+        min_value=0.0,
+        max_value=1000.0,
+        value=float(scale),
+        key="shelf_magnification",
+        help="Display only. Hover values, stress and the submitted solve stay physical.",
+    )
+    field = right.checkbox("Show bending moment instead", value=False)
+    if field:
+        view = "Bending moment"
     plot(
         engineering_viewport(
             saved.model,
             saved.result.displacement,
             scale,
             view,
+            overlay=overlay,
             monitors=(12,),
             title="Your loaded shelf support",
         ),
@@ -175,6 +188,26 @@ def shelf() -> None:
         f"Drawing magnification ×{scale:.4g}; colors and hover values are physical. "
         f"Top fiber is local +y. The dotted line is undeformed. Beam section stress is "
         f"not a 3D/contact stress field."
+    )
+    a, b, c = st.columns(3)
+    tip = float(saved.result.displacement[-1, 1])
+    a.metric(
+        "Tip movement [mm]",
+        f"{tip * 1000:.4g}",
+        help="Negative Y means downward; this is physical movement before display magnification.",
+    )
+    b.metric(
+        "Largest beam normal stress [MPa]",
+        f"{abs(saved.stress.critical_absolute.normal_stress_Pa) / 1e6:.4g}",
+        help=(
+            "Internal tension or compression per area, including axial and bending "
+            "contributions at the outer section edges. This is not a strength or fatigue approval."
+        ),
+    )
+    c.metric(
+        "Wall reaction moment [N m]",
+        f"{saved.result.reactions[0, 2]:.4g}",
+        help="The turning effect resisted by the wall, like force times a lever arm.",
     )
     render_interpretation(beam_interpretation(saved.model, saved.result))
 
@@ -196,7 +229,7 @@ def motor() -> None:
         "Illustrative bare/rigid/isolated motor comparison. All forces and mount "
         "properties are assumptions, not measured production motor data."
     )
-    with st.sidebar.container(border=True):
+    with st.sidebar.container():
         st.subheader("Your motor support")
         mass = st.number_input(
             "Motor mass [kg]",
@@ -258,6 +291,15 @@ def motor() -> None:
             st.error(str(exc))
     study = st.session_state.get("beginner_motor_result")
     if study is None:
+        preview, node = installed_model(
+            motor_config(
+                MotorInputs(
+                    mass_kg=mass, mount_stiffness_N_per_m=stiffness, excitation_hz=frequency
+                )
+            ),
+            "isolated",
+        )
+        model_preview(preview, monitors=(node,), key="beginner_motor")
         st.info("Run the example to compare a rigidly attached motor with an isolated motor.")
         return
     case = study.cases[2]
@@ -266,6 +308,37 @@ def motor() -> None:
         f"stiffness {study.config.stiffness_y_N_per_m:g} N/m · force at "
         f"{study.config.operating_hz:g} Hz."
     )
+    controls = st.columns((1.3, 1.5, 1))
+    topologies: tuple[Topology, ...] = ("isolated", "rigid", "bare")
+    topology = controls[0].selectbox("Motor configuration", topologies)
+    state_view = controls[1].radio("Inspect response", ("Static load", "Harmonic excitation"))
+    magnification = controls[2].number_input(
+        "Motor magnification [×]",
+        min_value=0.0,
+        max_value=100000.0,
+        value=5.0,
+    )
+    overlay = st.checkbox("Show undeformed motor assembly", value=True)
+    phase = (
+        st.slider("Motor excitation phase [deg]", 0, 360, 0, step=15)
+        if state_view == "Harmonic excitation"
+        else 0
+    )
+    plot(
+        motor_snapshot(
+            study, topology, state_view == "Harmonic excitation", phase, magnification, overlay
+        ),
+        width="stretch",
+        key="beginner_motor_viewport",
+    )
+    st.caption(
+        f"Actual {topology} topology · drawing ×{magnification:g}. Circle: inertia "
+        "glyph (not motor casing); dashed arms: rigid kinematics; hourglasses: ideal "
+        "spring/dashpot sites. Reference attachment points may coincide. Colors and "
+        "stress hover describe the rail only. Static force is −200 N; harmonic peak "
+        "force is 2 N. A harmonic snapshot uses the full complex solution, not its magnitude."
+    )
+    st.subheader("Isolated configuration · summary")
     a, b, c = st.columns(3)
     a.metric(
         "Lowest natural rate [Hz]",
@@ -291,22 +364,22 @@ def motor() -> None:
             "energy efficiency."
         ),
     )
-    plot(
-        engineering_viewport(
-            case.model,
-            case.static.displacement,
-            5,
-            "Combined normal stress",
-            mount_forces_N=case.static.mount_forces_N,
-            title="Motor, isolators and supporting rail",
-        ),
-        width="stretch",
-    )
+    st.subheader("Compare the same excitation")
     st.caption(
-        "Static deformation ×5 under an illustrative 200 N force. Motor circle is an "
-        "inertia glyph, not its casing. Colors describe the beam only; springs and "
-        "rigid motor have no invented stress field."
+        f"All configurations at {study.config.operating_hz:g} Hz. Relative motion uses "
+        "the complex motor–rail difference; bare rail has no additional motor. "
+        "Interface phase is relative to the applied harmonic force."
     )
+    comparison_table(motor_comparison_rows(study))
+    with st.expander("Natural frequencies · all three configurations"):
+        st.dataframe(
+            [
+                {"Configuration": item.topology, "Mode": i + 1, "Natural frequency [Hz]": float(f)}
+                for item in study.cases
+                for i, f in enumerate(item.modal.frequencies_hz)
+            ],
+            hide_index=True,
+        )
     fig = go.Figure()
     for item in study.cases[1:]:
         fig.add_trace(
@@ -326,7 +399,8 @@ def motor() -> None:
         yaxis_title="Support force amplitude / applied amplitude [%]",
     )
     fig.update_yaxes(type="log")
-    plot(fig, width="stretch")
+    with st.expander("Frequency sweep · force transmission"):
+        plot(fig, width="stretch")
     if not all(study.checks.values()):
         st.warning(
             "Some numerical study checks failed. Use Advanced mode to inspect the "
@@ -336,6 +410,10 @@ def motor() -> None:
 
 
 GLOSSARY = {
+    "Frequency": "Repeats per second, in Hz. A signal tone need not be a structural natural mode.",
+    "Amplitude": (
+        "Size of a component. FFT peak amplitude and overall RMS describe different quantities."
+    ),
     "FFT": (
         "A way to split a recording into repeating rates. A peak shows strong content "
         "at a frequency, not a fault label."
@@ -376,7 +454,7 @@ def diagnostics() -> None:
         "acceleration. This is not a measured recording, appliance FEM simulation or "
         "mechanical fault diagnosis."
     )
-    with st.sidebar.container(border=True):
+    with st.sidebar.container():
         st.subheader("Two repeating motions")
         spin = st.number_input(
             "Spin component [Hz]",
@@ -429,6 +507,57 @@ def diagnostics() -> None:
         f"{saved.inputs.second_hz:g} Hz. Original sample values are unchanged by the "
         f"chosen spectrum view."
     )
+    time = go.Figure(
+        go.Scatter(x=saved.series.time, y=saved.series.values, name="Simulated sensor acceleration")
+    )
+    time.update_layout(
+        title="What the simulated sensor records",
+        xaxis_title="Time [s]",
+        yaxis_title="Acceleration [m/s²]",
+    )
+    window = st.slider(
+        "Visible time span [s]",
+        0.25,
+        4.0,
+        1.0,
+        step=0.25,
+        help="Zoom only. The spectrum and RMS always use all 2048 original samples.",
+    )
+    time.update_xaxes(range=[0, window])
+    time.update_layout(height=400, margin=dict(l=40, r=15, t=60, b=90))
+    view = st.radio(
+        "Frequency view",
+        ("Spectrum (FFT)", "Power density (PSD)"),
+        horizontal=True,
+        help=GLOSSARY["FFT"] + " " + GLOSSARY["PSD"],
+    )
+    amplitude, psd = spectrum_plots(result, upper_hz=80, logarithmic=False)
+    amplitude.update_layout(
+        title="Repeating vibration rates (FFT)", yaxis_title="Peak acceleration [m/s²]"
+    )
+    psd.update_layout(title="How vibration power is distributed (PSD)", yaxis_title="(m/s²)²/Hz")
+    selected_spectrum = amplitude if view == "Spectrum (FFT)" else psd
+    selected_spectrum.update_layout(
+        height=400,
+        margin=dict(l=40, r=15, t=60, b=90),
+        legend=dict(orientation="h", y=-0.25, yanchor="top", x=0, font_size=10),
+    )
+    for frequency, label in (
+        (saved.inputs.spin_hz, "Input component 1"),
+        (saved.inputs.second_hz, "Input component 2"),
+    ):
+        selected_spectrum.add_vline(
+            x=frequency,
+            line_dash="dot",
+            line_width=1,
+            annotation_text=label,
+            annotation_textangle=-90,
+        )
+    left, right = st.columns(2)
+    with left:
+        plot(time, width="stretch", key="washer_time")
+    with right:
+        plot(selected_spectrum, width="stretch", key="washer_spectrum")
     a, b, c = st.columns(3)
     a.metric(
         "Dominant frequency [Hz]",
@@ -443,27 +572,11 @@ def diagnostics() -> None:
         f"{result.raw_metrics.peak_absolute:.5g}",
         help="Largest absolute original sample; different from the overall RMS level.",
     )
-    time = go.Figure(
-        go.Scatter(x=saved.series.time, y=saved.series.values, name="Simulated sensor acceleration")
+    st.caption(
+        "Left: the original waveform (visual zoom only). Right: all four seconds "
+        "resolved by frequency. Dotted markers are prescribed synthetic tones, "
+        "not natural-mode predictions. Nearby components can merge under the Hann window."
     )
-    time.update_layout(
-        title="What the simulated sensor records",
-        xaxis_title="Time [s]",
-        yaxis_title="Acceleration [m/s²]",
-    )
-    plot(time, width="stretch")
-    view = st.radio(
-        "Frequency view",
-        ("Spectrum (FFT)", "Power density (PSD)"),
-        horizontal=True,
-        help=GLOSSARY["FFT"] + " " + GLOSSARY["PSD"],
-    )
-    amplitude, psd = spectrum_plots(result, upper_hz=80, logarithmic=False)
-    amplitude.update_layout(
-        title="Repeating vibration rates (FFT)", yaxis_title="Peak acceleration [m/s²]"
-    )
-    psd.update_layout(title="How vibration power is distributed (PSD)", yaxis_title="(m/s²)²/Hz")
-    plot(amplitude if view == "Spectrum (FFT)" else psd, width="stretch")
     st.caption(
         "512 samples/s · 2048 samples · 4 s DFT duration · 0.25 Hz bin spacing · Hann "
         "window, mean removal.",
