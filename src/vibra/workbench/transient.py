@@ -27,6 +27,7 @@ from vibra.visualization.transient import (
     response_history,
 )
 from vibra.visualization.viewport import engineering_viewport, state_animation
+from vibra.workbench.presentation import plot
 from vibra.workbench.viewport import model_preview, nodal_loads
 
 
@@ -213,7 +214,7 @@ def workspace() -> None:
     unit: Literal["rad", "m"] = "rad" if result.response_dofs[column].dof == DOF.RZ else "m"
     b.metric(f"Physical response [{unit}]", f"{result.response_displacement[index, column]:.6g}")
     c.metric("Relative energy balance error", f"{result.relative_energy_error:.3e}")
-    st.plotly_chart(
+    plot(
         engineering_viewport(
             model,
             result.displacement[index],
@@ -226,8 +227,8 @@ def workspace() -> None:
     )
     history = response_history(result)
     history.add_vline(x=float(result.time[index]), line_dash="dash", line_color="#ba4b37")
-    st.plotly_chart(history, width="stretch")
-    st.plotly_chart(energy_history(result), width="stretch")
+    plot(history, width="stretch")
+    plot(energy_history(result), width="stretch")
     if peak_translation / saved["geometry"].length > 0.05:
         st.warning(
             "Displacement exceeds 5% of beam length; small-displacement theory may be unsuitable."
@@ -239,7 +240,7 @@ def workspace() -> None:
         indices = np.unique(
             np.linspace(0, len(result.time) - 1, min(40, len(result.time)), dtype=int)
         )
-        st.plotly_chart(
+        plot(
             state_animation(
                 model,
                 result.displacement[indices],

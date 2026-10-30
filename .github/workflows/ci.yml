@@ -30,6 +30,7 @@ jobs:
       - run: uv run python examples/automotive_nvh_study.py
       - run: uv run python examples/installed_motor_study.py
       - run: uv run python examples/beam_stress_viewport.py
+      - run: uv run python examples/beginner_workflows.py
       - run: uv build
       - name: Verify installed wheel outside checkout
         run: |
@@ -39,6 +40,7 @@ jobs:
           /tmp/vibra-wheel/bin/vibra-verify-installed
           /tmp/vibra-wheel/bin/vibra-verify-stress
           /tmp/vibra-wheel/bin/vibra-installed-study
+          /tmp/vibra-wheel/bin/python "$GITHUB_WORKSPACE/examples/beginner_workflows.py"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

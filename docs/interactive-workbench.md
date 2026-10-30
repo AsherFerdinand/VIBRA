@@ -1,5 +1,8 @@
 # Interactive engineering workbench and verified beam stress
 
+For the current 0.8 Beginner entry flow, see [Getting Started](getting-started.md).
+The detailed solver controls described here are available in **Advanced** mode.
+
 VIBRA 0.7 groups the existing verified solvers into three engineering experiences.
 It uses Streamlit and Plotly, with no new major physics solver or graphics engine.
 The aim is to make the model, its load path and the meaning of its response visible

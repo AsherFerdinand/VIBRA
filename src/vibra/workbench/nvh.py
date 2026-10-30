@@ -15,6 +15,7 @@ from vibra.studies.nvh import NVHConfig, SupportDesign, run_nvh_study
 from vibra.visualization.nvh import comparison_figures, geometry_plot
 from vibra.visualization.plots import beam_shape, bending_moment
 from vibra.workbench.installed import workspace as installed_workspace
+from vibra.workbench.presentation import plot
 from vibra.workbench.viewport import static_view
 
 
@@ -25,6 +26,7 @@ def workspace() -> None:
         ("Bare rail A/B (0.5 reference)", "Installed motor A/B/C"),
         horizontal=True,
         index=1,
+        key="motor_investigation",
     )
     if investigation == "Installed motor A/B/C":
         installed_workspace()
@@ -128,12 +130,12 @@ def workspace() -> None:
         ["Model & static", "Modes & harmonic", "Transient", "Signals", "Convergence & report"]
     )
     with tabs[0]:
-        st.plotly_chart(geometry_plot(study), width="stretch")
+        plot(geometry_plot(study), width="stretch")
         st.caption(
             "Neutral axes overlap for equal lengths; section depth is the default change. "
             "Root is fixed; static load is at the free tip."
         )
-        st.plotly_chart(figures["static"], width="stretch")
+        plot(figures["static"], width="stretch")
         metrics = (
             ("Rail mass [kg]", "mass_kg", 1.0),
             ("Maximum static displacement [mm]", "maximum_static_translation_m", 1000.0),
@@ -164,7 +166,7 @@ def workspace() -> None:
         design_choice = st.selectbox("Inspect static design", ("Baseline A", "Modified B"))
         item = study.baseline if design_choice == "Baseline A" else study.modified
         static_view(item.model, item.static, 5, key="bare_nvh", monitors=(study.config.elements,))
-        st.plotly_chart(bending_moment(item.model, item.static), width="stretch")
+        plot(bending_moment(item.model, item.static), width="stretch")
         st.caption(
             "Deformation shown ×5. Moments/end forces are not strength or fatigue assessment."
         )
@@ -174,8 +176,8 @@ def workspace() -> None:
             f"{study.config.operating_rpm:g}/60 = {study.config.operating_frequency_hz:g} Hz; "
             "this is not rotation frequency alone."
         )
-        st.plotly_chart(figures["harmonic_amplitude"], width="stretch")
-        st.plotly_chart(figures["harmonic_phase"], width="stretch")
+        plot(figures["harmonic_amplitude"], width="stretch")
+        plot(figures["harmonic_phase"], width="stretch")
         st.caption(
             "Dotted lines: first natural references. Maxima are sampled; "
             "force magnitude is assumed constant over frequency."
@@ -205,7 +207,7 @@ def workspace() -> None:
         )
         shape = item.modal.modes[:, mode].reshape(-1, 3)
         scale = 0.05 * item.design.length / float(np.max(np.linalg.norm(shape[:, :2], axis=1)))
-        st.plotly_chart(beam_shape(item.model, shape, scale, modal=True), width="stretch")
+        plot(beam_shape(item.model, shape, scale, modal=True), width="stretch")
         st.caption(
             f"Mass-normalized eigenvector ×{scale:.5g}, arbitrary display amplitude. "
             "Bending: global Y/RZ; axial: global X. No out-of-plane modes."
@@ -221,7 +223,7 @@ def workspace() -> None:
             "Static and dynamic responses superpose linearly; no prestress stiffness."
         )
         for key in ("displacement", "velocity", "acceleration", "energy", "reactions"):
-            st.plotly_chart(figures[key], width="stretch")
+            plot(figures[key], width="stretch")
         st.caption(
             "D is cumulative algorithm-consistent dissipation. "
             "JSON retains work, balance and dynamic reactions for each design."
@@ -229,8 +231,8 @@ def workspace() -> None:
     with tabs[3]:
         quantities: tuple[Quantity, ...] = ("displacement", "acceleration")
         quantity = st.selectbox("Signal quantity", quantities)
-        st.plotly_chart(figures[f"fft_{quantity}"], width="stretch")
-        st.plotly_chart(figures[f"psd_{quantity}"], width="stretch")
+        plot(figures[f"fft_{quantity}"], width="stretch")
+        plot(figures[f"psd_{quantity}"], width="stretch")
         for item in (study.baseline, study.modified):
             signal = item.signals[quantity].spectrum
             st.write(

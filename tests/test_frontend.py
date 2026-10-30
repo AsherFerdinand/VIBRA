@@ -17,6 +17,9 @@ def navigate(app: AppTest, analysis: str) -> None:
         if analysis in ("Signal Diagnostics", "SDOF vibration")
         else "Cantilever Beam"
     )
+    next(widget for widget in app.radio if widget.label == "Experience level").set_value(
+        "Advanced"
+    ).run()
     app.sidebar.selectbox[0].select(experience).run()
     if experience == "Cantilever Beam":
         next(widget for widget in app.selectbox if widget.label == "Analysis").select(
@@ -26,6 +29,10 @@ def navigate(app: AppTest, analysis: str) -> None:
         next(widget for widget in app.radio if widget.label == "Diagnostic tool").set_value(
             analysis
         ).run()
+        if analysis == "Signal Diagnostics":
+            next(widget for widget in app.radio if widget.label == "Signal source").set_value(
+                "FEM simulation"
+            ).run()
     elif experience == "Automotive Motor Mount":
         next(widget for widget in app.radio if widget.label == "Investigation").set_value(
             "Bare rail A/B (0.5 reference)"
@@ -287,6 +294,7 @@ def test_three_experiences_and_static_stress_interpretation() -> None:
         "Automotive Motor Mount",
         "Vibration Diagnostics",
     ]
+    navigate(app, "Static cantilever")
     next(widget for widget in app.number_input if widget.label == "Tip axial force [N]").set_value(
         20000.0
     )

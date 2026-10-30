@@ -18,6 +18,7 @@ from vibra.solvers.harmonic import (
 )
 from vibra.visualization.harmonic import response_figures
 from vibra.visualization.viewport import engineering_viewport
+from vibra.workbench.presentation import plot
 from vibra.workbench.viewport import cycle_view, model_preview, nodal_loads
 
 
@@ -176,7 +177,7 @@ def workspace() -> None:
     )
     state = np.real(result.displacement[index] * np.exp(1j * np.deg2rad(time_phase)))
     applied = np.real(result.force_phasor * np.exp(1j * np.deg2rad(time_phase)))
-    st.plotly_chart(
+    plot(
         engineering_viewport(
             model,
             state,
@@ -196,8 +197,8 @@ def workspace() -> None:
         force=result.force_phasor,
     )
     amplitude_plot, phase_plot = response_figures(result)
-    st.plotly_chart(amplitude_plot, width="stretch")
-    st.plotly_chart(phase_plot, width="stretch")
+    plot(amplitude_plot, width="stretch")
+    plot(phase_plot, width="stretch")
     st.caption(
         "Diamonds: sampled interior maxima. Dotted lines: undamped natural frequencies. "
         "Phase is wrapped and omitted at zero/negligible response. "

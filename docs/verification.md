@@ -152,3 +152,25 @@ All prior tests and verification CLIs remain. Real Chromium screenshots are unde
 `screenshots/`; UI automation also exercises new contour and animation controls.
 Performance measurements are executed cloud-CPU observations, not universal laptop
 benchmarks. No experimental, solid/contact stress or ANSYS validation is claimed.
+
+## Beginner workflows and theme invariance (0.8)
+
+`tests/test_beginner_theme.py` exercises all three one-click examples, scenario
+loading, hidden expert controls, computed explanations, guided beam changes,
+synthetic source provenance and Advanced handoff. Original Advanced workflow
+assertions are retained through the new level selector. Tests verify that theme
+switches preserve submitted result identity and numerical arrays bit for bit.
+Pure figure tests cover unchanged geometry, force/phase data, contour limits,
+source figures, animation frame coordinates and titles. Palette text contrast is
+checked independently; [real browser evidence](screenshots/0.8/browser-checks.json)
+records both themes for each example and checks rendered dropdown/heading contrast,
+caption opacity, chart colors and unchanged explanations. Screenshots are actual
+Chromium output, not synthesized images. Every earlier numerical benchmark suite
+remains required; the synthetic spin example is not experimental validation or a
+mechanical fault model.
+
+The 0.8 delivery run passed all 232 pytest cases, Ruff lint/format checks and
+strict Mypy (96 source files), all six verification CLIs, both study CLIs and
+nine reproducible examples. The wheel was installed and exercised outside the
+checkout. Six real browser captures cover all three Beginner experiences in
+Light and Dark. These are executed checks, not experimental validation.

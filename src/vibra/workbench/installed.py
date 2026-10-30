@@ -18,6 +18,7 @@ from vibra.studies.installed import InstalledConfig, installed_model, run_instal
 from vibra.studies.nvh import SupportDesign
 from vibra.visualization.installed import installed_figures
 from vibra.visualization.viewport import engineering_viewport, state_animation
+from vibra.workbench.presentation import plot
 from vibra.workbench.viewport import (
     cycle_view,
     model_preview,
@@ -179,7 +180,7 @@ def workspace() -> None:
         )
         mode = st.slider("Installed mode number", 1, 6, 1)
         pivot = float(np.max(abs(case.modal.modes[:, mode - 1])))
-        st.plotly_chart(
+        plot(
             engineering_viewport(
                 case.model,
                 case.modal.modes[:, mode - 1],
@@ -221,7 +222,7 @@ def workspace() -> None:
             f"{np.angle(h.displacement[sample, 3 * case.force_node + 1], deg=True):.4g}°"
         )
         hs = st.number_input("Installed harmonic magnification [×]", min_value=0.0, value=1000.0)
-        st.plotly_chart(
+        plot(
             engineering_viewport(
                 case.model,
                 np.real(h.displacement[sample]),
@@ -252,7 +253,7 @@ def workspace() -> None:
             "root_transmission",
             "mount_transmission",
         ):
-            st.plotly_chart(figures[key], width="stretch")
+            plot(figures[key], width="stretch")
         st.caption(
             "Peak cosine force; roots and rail transmitted forces include "
             "different inertia paths. Force ratios are not base-motion "
@@ -269,7 +270,7 @@ def workspace() -> None:
         )
         case = inspected
         index = int(round(selected_t / study.config.grid.time_step))
-        st.plotly_chart(
+        plot(
             engineering_viewport(
                 case.model,
                 case.transient.displacement[index],
@@ -288,14 +289,14 @@ def workspace() -> None:
         st.caption("Actual installed FEM/rigid-body solution; physical displacement magnified ×20.")
         figures["displacement"].add_vline(x=float(case.transient.time[index]), line_dash="dash")
         for key in ("displacement", "root_reaction", "transmitted", "energy", "dissipation"):
-            st.plotly_chart(figures[key], width="stretch")
+            plot(figures[key], width="stretch")
         with st.expander("Velocity and acceleration histories"):
-            st.plotly_chart(figures["velocity"], width="stretch")
-            st.plotly_chart(figures["acceleration"], width="stretch")
+            plot(figures["velocity"], width="stretch")
+            plot(figures["acceleration"], width="stretch")
         if st.checkbox("Animate installed transient"):
             t = case.transient
             indices = np.unique(np.linspace(0, len(t.time) - 1, min(30, len(t.time)), dtype=int))
-            st.plotly_chart(
+            plot(
                 state_animation(
                     case.model,
                     t.displacement[indices],

@@ -15,21 +15,33 @@ from vibra.signals.fem import (
     natural_references,
 )
 from vibra.signals.models import FrequencyBand, SignalUnit, SpectrumConfig
+from vibra.studies.beginner import washer_signal
 from vibra.verification.benchmarks import steel_case
 from vibra.verification.signal_demo import cantilever_signal_case
 from vibra.visualization.signals import signal_time_plot, spectrum_plots
+from vibra.workbench.presentation import plot
 
 QUANTITIES: tuple[Quantity, ...] = ("displacement", "velocity", "acceleration")
 UNITS: tuple[SignalUnit, ...] = ("m/s^2", "m/s", "m", "rad/s^2", "rad/s", "rad")
 
 
 def workspace() -> None:
+    st.session_state["signal_result_visible"] = False
     st.subheader("Signal Diagnostics")
     st.caption("Uniform SI time histories · one-sided FFT and PSD · no health classifications")
-    source = st.sidebar.radio("Signal source", ("FEM simulation", "CSV import"))
+    source = st.sidebar.radio(
+        "Signal source", ("Simulated spin example", "FEM simulation", "CSV import")
+    )
     try:
         naturals: tuple[float, ...] = ()
-        if source == "FEM simulation":
+        if source == "Simulated spin example":
+            example = st.session_state.get("beginner_washer_result")
+            series = washer_signal() if example is None else example.series
+            st.caption(
+                "Synthetic washing-machine spin segment, not measured data or a fault model. "
+                "Uses the latest submitted Beginner recording when available."
+            )
+        elif source == "FEM simulation":
             if st.sidebar.button("Generate cantilever pulse simulation"):
                 with st.spinner("Running the actual transient FEM solver…"):
                     model, config, transient = cantilever_signal_case()
@@ -141,6 +153,7 @@ def workspace() -> None:
                 "Source/channel changes require a new analysis."
             )
             return
+        st.session_state["signal_result_visible"] = True
         series, result, naturals = saved["series"], saved["result"], saved["naturals"]
         st.caption(
             f"Analyzed record: {series.provenance.label} · {series.unit} · "
@@ -156,7 +169,7 @@ def workspace() -> None:
             f"sample span {result.sampling.sample_span_s:.7g} s · "
             f"DFT duration N/fs = {result.sampling.dft_duration_s:.7g} s"
         )
-        st.plotly_chart(signal_time_plot(series, result), width="stretch")
+        plot(signal_time_plot(series, result), width="stretch")
         kind = st.radio("Primary spectrum", ("Amplitude", "PSD"), horizontal=True)
         frequency_range = st.slider(
             "Displayed frequency range [Hz]",
@@ -168,9 +181,9 @@ def workspace() -> None:
         amplitude_plot, psd_plot = spectrum_plots(
             result, naturals, *frequency_range, logarithmic=log
         )
-        st.plotly_chart(amplitude_plot if kind == "Amplitude" else psd_plot, width="stretch")
+        plot(amplitude_plot if kind == "Amplitude" else psd_plot, width="stretch")
         with st.expander("Other spectrum"):
-            st.plotly_chart(psd_plot if kind == "Amplitude" else amplitude_plot, width="stretch")
+            plot(psd_plot if kind == "Amplitude" else amplitude_plot, width="stretch")
         st.caption(
             "Diamonds are sampled spectral peaks; dotted FEM lines are references. "
             "These do not identify resonance. Zero bins are omitted on log axes."

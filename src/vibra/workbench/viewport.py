@@ -15,6 +15,7 @@ from vibra.postprocessing.beam import recover_stress, sample_beam
 from vibra.solvers.harmonic import ComplexMatrix
 from vibra.solvers.static import StaticResult
 from vibra.visualization.viewport import CONTOURS, Contour, engineering_viewport, state_animation
+from vibra.workbench.presentation import plot
 
 
 def nodal_loads(model: FrameModel, vector: Matrix) -> tuple[NodalLoad, ...]:
@@ -52,7 +53,7 @@ def model_preview(
     monitors: tuple[int, ...] = (),
     key: str = "model",
 ) -> None:
-    st.plotly_chart(
+    plot(
         engineering_viewport(
             model,
             np.zeros(3 * len(model.nodes)),
@@ -102,7 +103,7 @@ def static_view(
         title="Static beam response",
         mount_forces_N=result.mount_forces_N,
     )
-    st.plotly_chart(figure, width="stretch", key=key + "_viewport")
+    plot(figure, width="stretch", key=key + "_viewport")
     stress = recover_stress(model, result.displacement)
     critical = stress.critical_absolute
     fields = sample_beam(model, result.displacement)
@@ -165,7 +166,7 @@ def static_view(
             fig.update_yaxes(title_text=unit, row=row, col=1)
             fig.update_xaxes(title_text="Local element x [m]", row=row, col=1)
         fig.update_layout(template="plotly_white", height=650)
-        st.plotly_chart(fig, width="stretch")
+        plot(fig, width="stretch")
     st.download_button(
         "Export beam section stress (JSON)",
         engineering_report("Elastic beam section recovery", model, stress),
@@ -193,7 +194,7 @@ def cycle_view(
         forces = (
             None if force is None else np.real(np.exp(1j * phases[:, None]) * force.reshape(1, -1))
         )
-        st.plotly_chart(
+        plot(
             state_animation(
                 model,
                 states,

@@ -20,6 +20,7 @@ from vibra.visualization.plots import (
     sdof_response,
 )
 from vibra.visualization.viewport import engineering_viewport
+from vibra.workbench.presentation import plot
 from vibra.workbench.viewport import cycle_view, model_preview, static_view
 
 
@@ -172,7 +173,7 @@ def workspace(analysis: str) -> None:
                 "Nonoscillatory" if wd is None else f"{wd / (2 * np.pi):.5g}",
             )
             st.caption("Solver: SciPy DOP853 · mẍ + cẋ + kx = F(t) · independent lumped model")
-            st.plotly_chart(sdof_response(result), width="stretch")
+            plot(sdof_response(result), width="stretch")
         else:
             model = saved_result["model"]
             geometry, material, rectangle = (
@@ -290,7 +291,7 @@ def workspace(analysis: str) -> None:
                     f"Arbitrary eigenvector amplitude; plotted coordinates use φ × {factor:.5g}. "
                     "This is a visualization scale, not a physical vibration displacement."
                 )
-                st.plotly_chart(
+                plot(
                     engineering_viewport(
                         model,
                         shape,
@@ -315,7 +316,7 @@ def workspace(analysis: str) -> None:
                     key="beam_mode",
                     modal=True,
                 )
-                st.plotly_chart(convergence_plot(saved_result["convergence"]), width="stretch")
+                plot(convergence_plot(saved_result["convergence"]), width="stretch")
                 st.write(
                     "Analytical first three bending frequencies [Hz]:",
                     cantilever_bending_hz(geometry, material, section),

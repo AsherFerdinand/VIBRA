@@ -221,3 +221,28 @@ and computed interpretation. Beam stress never colors motor or mount glyphs.
 interpolation, units, critical locations and result/animation correspondence.
 Screenshots are Chromium captures of the actual Streamlit app, not generated images.
 No runtime dependencies or major physics solver were introduced.
+
+## Storytelling, beginner controls and themes (0.8)
+
+`frontend/app.py` defaults to Beginner and offers an explicit session-local theme
+selector. `workbench/scenarios.py` owns compact collapsible reference stories and
+model-based/sensor-schematic illustrations. `studies/beginner.py` only orchestrates
+existing static/installed/signal APIs and defines reproducible teaching inputs and
+synthetic provenance; it introduces no physics or signal-processing algorithm.
+`workbench/beginner.py` owns essential controls and guided actions. Advanced workspaces
+retain their prior controls and exports. The latest submitted synthetic record can
+be handed to Advanced signal analysis without changing its samples.
+
+`workbench/interpretation.py` formats deterministic What/Why/Try explanations from
+submitted results, including source/fingerprint visibility for diagnostics. It does
+not call an LLM, diagnose faults, fit material behavior or invent trends.
+
+`visualization/theme.py` copies and styles figures without editing source arrays,
+geometry, phases, frame states or numerical color limits. Signed stress retains
+blue-negative/red-positive meaning with a brighter dark ramp. Every workbench Plotly
+view goes through `workbench/presentation.py`; animations inherit themed frame/control
+fonts and annotations. Session CSS covers native widgets using semantic selectors
+for both BaseWeb and React Aria versions, without mutating global server configuration.
+Native data-grid/file-dialog appearance remains a framework/browser boundary.
+Theme/UI tests and real browser contrast checks protect this boundary. Runtime
+dependencies and all numerical core/solver modules are unchanged.

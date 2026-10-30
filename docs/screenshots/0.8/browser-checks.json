@@ -1,0 +1,287 @@
+{
+  "source": "Actual running Streamlit app; isolated Playwright and system Chromium; unmodified screenshots",
+  "viewport_px": [
+    1600,
+    2600
+  ],
+  "checks": [
+    {
+      "experience": "Cantilever Beam",
+      "theme": "Light",
+      "computed_colors": {
+        "comboboxes": [
+          {
+            "text": "rgb(25, 52, 66)",
+            "background": "rgb(255, 255, 255)"
+          },
+          {
+            "text": "rgb(25, 52, 66)",
+            "background": "rgb(255, 255, 255)"
+          }
+        ],
+        "scenario_heading": {
+          "text": "rgb(25, 52, 66)",
+          "background": "rgb(237, 243, 246)"
+        },
+        "caption_opacity": "1",
+        "main_background": "rgb(255, 255, 255)",
+        "title_text": "rgb(25, 52, 66)",
+        "input_text": "rgb(25, 52, 66)",
+        "input_background": "rgb(255, 255, 255)",
+        "label": "rgb(25, 52, 66)",
+        "primary_text": "rgb(255, 255, 255)",
+        "primary_background": "rgb(18, 110, 118)",
+        "plots": [
+          {
+            "paper": "#ffffff",
+            "font": "#193442",
+            "title": "Reference model sketch \u00b7 not solved"
+          },
+          {
+            "paper": "#ffffff",
+            "font": "#193442",
+            "title": "Your loaded shelf support<br><sup>Physical deformation \u00d712.6 \u00b7 deformed \u00b7 sampled min 4.7212e-12, max 75 MPa</sup>"
+          }
+        ]
+      },
+      "page_errors": [],
+      "interpretation": "What happened?",
+      "interpretation_unchanged": true
+    },
+    {
+      "experience": "Cantilever Beam",
+      "theme": "Dark",
+      "computed_colors": {
+        "comboboxes": [
+          {
+            "text": "rgb(237, 243, 248)",
+            "background": "rgb(17, 27, 37)"
+          },
+          {
+            "text": "rgb(237, 243, 248)",
+            "background": "rgb(17, 27, 37)"
+          }
+        ],
+        "scenario_heading": {
+          "text": "rgb(237, 243, 248)",
+          "background": "rgb(28, 43, 57)"
+        },
+        "caption_opacity": "1",
+        "main_background": "rgb(17, 27, 37)",
+        "title_text": "rgb(237, 243, 248)",
+        "input_text": "rgb(237, 243, 248)",
+        "input_background": "rgb(17, 27, 37)",
+        "label": "rgb(237, 243, 248)",
+        "primary_text": "rgb(17, 27, 37)",
+        "primary_background": "rgb(100, 222, 212)",
+        "plots": [
+          {
+            "paper": "#111b25",
+            "font": "#edf3f8",
+            "title": "Reference model sketch \u00b7 not solved"
+          },
+          {
+            "paper": "#111b25",
+            "font": "#edf3f8",
+            "title": "Your loaded shelf support<br><sup>Physical deformation \u00d712.6 \u00b7 deformed \u00b7 sampled min 4.7212e-12, max 75 MPa</sup>"
+          }
+        ]
+      },
+      "page_errors": [],
+      "interpretation": "What happened?",
+      "interpretation_unchanged": true
+    },
+    {
+      "experience": "Automotive Motor Mount",
+      "theme": "Light",
+      "computed_colors": {
+        "comboboxes": [
+          {
+            "text": "rgb(25, 52, 66)",
+            "background": "rgb(255, 255, 255)"
+          },
+          {
+            "text": "rgb(25, 52, 66)",
+            "background": "rgb(255, 255, 255)"
+          }
+        ],
+        "scenario_heading": {
+          "text": "rgb(25, 52, 66)",
+          "background": "rgb(237, 243, 246)"
+        },
+        "caption_opacity": "1",
+        "main_background": "rgb(255, 255, 255)",
+        "title_text": "rgb(25, 52, 66)",
+        "input_text": "rgb(25, 52, 66)",
+        "input_background": "rgb(255, 255, 255)",
+        "label": "rgb(25, 52, 66)",
+        "primary_text": "rgb(255, 255, 255)",
+        "primary_background": "rgb(18, 110, 118)",
+        "plots": [
+          {
+            "paper": "#ffffff",
+            "font": "#193442",
+            "title": "Reference model sketch \u00b7 not solved"
+          },
+          {
+            "paper": "#ffffff",
+            "font": "#193442",
+            "title": "Motor, isolators and supporting rail<br><sup>Physical deformation \u00d75 \u00b7 deformed \u00b7 sampled min 5.5268e-12, max 150 MPa</sup>"
+          },
+          {
+            "paper": "#ffffff",
+            "font": "#193442",
+            "title": "How much shaking force reaches the fixed support?"
+          }
+        ]
+      },
+      "page_errors": [],
+      "interpretation": "What happened?",
+      "interpretation_unchanged": true
+    },
+    {
+      "experience": "Automotive Motor Mount",
+      "theme": "Dark",
+      "computed_colors": {
+        "comboboxes": [
+          {
+            "text": "rgb(237, 243, 248)",
+            "background": "rgb(17, 27, 37)"
+          },
+          {
+            "text": "rgb(237, 243, 248)",
+            "background": "rgb(17, 27, 37)"
+          }
+        ],
+        "scenario_heading": {
+          "text": "rgb(237, 243, 248)",
+          "background": "rgb(28, 43, 57)"
+        },
+        "caption_opacity": "1",
+        "main_background": "rgb(17, 27, 37)",
+        "title_text": "rgb(237, 243, 248)",
+        "input_text": "rgb(237, 243, 248)",
+        "input_background": "rgb(17, 27, 37)",
+        "label": "rgb(237, 243, 248)",
+        "primary_text": "rgb(17, 27, 37)",
+        "primary_background": "rgb(100, 222, 212)",
+        "plots": [
+          {
+            "paper": "#111b25",
+            "font": "#edf3f8",
+            "title": "Reference model sketch \u00b7 not solved"
+          },
+          {
+            "paper": "#111b25",
+            "font": "#edf3f8",
+            "title": "Motor, isolators and supporting rail<br><sup>Physical deformation \u00d75 \u00b7 deformed \u00b7 sampled min 5.5268e-12, max 150 MPa</sup>"
+          },
+          {
+            "paper": "#111b25",
+            "font": "#edf3f8",
+            "title": "How much shaking force reaches the fixed support?"
+          }
+        ]
+      },
+      "page_errors": [],
+      "interpretation": "What happened?",
+      "interpretation_unchanged": true
+    },
+    {
+      "experience": "Vibration Diagnostics",
+      "theme": "Light",
+      "computed_colors": {
+        "comboboxes": [
+          {
+            "text": "rgb(25, 52, 66)",
+            "background": "rgb(255, 255, 255)"
+          },
+          {
+            "text": "rgb(25, 52, 66)",
+            "background": "rgb(255, 255, 255)"
+          }
+        ],
+        "scenario_heading": {
+          "text": "rgb(25, 52, 66)",
+          "background": "rgb(237, 243, 246)"
+        },
+        "caption_opacity": "1",
+        "main_background": "rgb(255, 255, 255)",
+        "title_text": "rgb(25, 52, 66)",
+        "input_text": "rgb(25, 52, 66)",
+        "input_background": "rgb(255, 255, 255)",
+        "label": "rgb(25, 52, 66)",
+        "primary_text": "rgb(255, 255, 255)",
+        "primary_background": "rgb(18, 110, 118)",
+        "plots": [
+          {
+            "paper": "#ffffff",
+            "font": "#193442",
+            "title": "Sensor \u2192 simulated vibration record"
+          },
+          {
+            "paper": "#ffffff",
+            "font": "#193442",
+            "title": "What the simulated sensor records"
+          },
+          {
+            "paper": "#ffffff",
+            "font": "#193442",
+            "title": "Repeating vibration rates (FFT)"
+          }
+        ]
+      },
+      "page_errors": [],
+      "interpretation": "What happened?",
+      "interpretation_unchanged": true
+    },
+    {
+      "experience": "Vibration Diagnostics",
+      "theme": "Dark",
+      "computed_colors": {
+        "comboboxes": [
+          {
+            "text": "rgb(237, 243, 248)",
+            "background": "rgb(17, 27, 37)"
+          },
+          {
+            "text": "rgb(237, 243, 248)",
+            "background": "rgb(17, 27, 37)"
+          }
+        ],
+        "scenario_heading": {
+          "text": "rgb(237, 243, 248)",
+          "background": "rgb(28, 43, 57)"
+        },
+        "caption_opacity": "1",
+        "main_background": "rgb(17, 27, 37)",
+        "title_text": "rgb(237, 243, 248)",
+        "input_text": "rgb(237, 243, 248)",
+        "input_background": "rgb(17, 27, 37)",
+        "label": "rgb(237, 243, 248)",
+        "primary_text": "rgb(17, 27, 37)",
+        "primary_background": "rgb(100, 222, 212)",
+        "plots": [
+          {
+            "paper": "#111b25",
+            "font": "#edf3f8",
+            "title": "Sensor \u2192 simulated vibration record"
+          },
+          {
+            "paper": "#111b25",
+            "font": "#edf3f8",
+            "title": "What the simulated sensor records"
+          },
+          {
+            "paper": "#111b25",
+            "font": "#edf3f8",
+            "title": "Repeating vibration rates (FFT)"
+          }
+        ]
+      },
+      "page_errors": [],
+      "interpretation": "What happened?",
+      "interpretation_unchanged": true
+    }
+  ]
+}

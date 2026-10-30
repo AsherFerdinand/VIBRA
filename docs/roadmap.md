@@ -17,6 +17,10 @@ Version 0.7 reorganizes the application into three engineering experiences, with
 a shared actual-model viewport, verified beam section stress contours and bounded
 mode/complex-harmonic/transient animation.
 
+Version 0.8 adds scenario-first Beginner workflows, deterministic result explanations,
+a reproducible simulated spin recording and session-local Light/Dark presentation,
+while retaining the complete Advanced workbench and all numerical algorithms.
+
 Next milestones, in order:
 
 1. **Interpretation and measurements:** student feedback on the three-experience workbench,
